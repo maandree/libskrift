@@ -11,9 +11,7 @@ libskrift_merge_glyphs(LIBSKRIFT_CONTEXT *ctx, struct libskrift_glyph *glyph1,
 	size_t width, height, r, c, size, psize;
 	size_t src_off, dest_off, src_linesize, dest_linesize;
 
-	(void) ctx;
-
-	psize = glyph1->size / ((size_t)glyph1->width * (size_t)glyph1->height);
+	psize = glyph1->size / ((size_t)glyph1->width * (size_t)glyph1->height); 
 
 	x1a = glyph1->x;
 	x1b = glyph2->x;
@@ -56,9 +54,15 @@ libskrift_merge_glyphs(LIBSKRIFT_CONTEXT *ctx, struct libskrift_glyph *glyph1,
 	src_linesize = glyph2->width * psize;
 	dest_off  = (size_t)(glyph2->y - y1) * dest_linesize;
 	dest_off += (size_t)(glyph2->x - x1) * psize;
-	for (r = src_off = 0; r < glyph2->height; r++, dest_off += dest_linesize, src_off += src_linesize)
-		for (c = 0; c < src_linesize; c++)
-			(*glyphp)->image[dest_off + c] = MAX((*glyphp)->image[dest_off + c], glyph2->image[src_off + c]);
+	if (ctx->rendering.smoothing) {
+		for (r = src_off = 0; r < glyph2->height; r++, dest_off += dest_linesize, src_off += src_linesize)
+			for (c = 0; c < src_linesize; c++)
+				(*glyphp)->image[dest_off + c] = MAX((*glyphp)->image[dest_off + c], glyph2->image[src_off + c]);
+	} else {
+		for (r = src_off = 0; r < glyph2->height; r++, dest_off += dest_linesize, src_off += src_linesize)
+			for (c = 0; c < src_linesize; c++)
+				(*glyphp)->image[dest_off + c] |= glyph2->image[src_off + c];
+	}
 
 	return 0;
 }
