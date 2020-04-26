@@ -8,11 +8,12 @@ libskrift_merge_glyphs(LIBSKRIFT_CONTEXT *ctx, struct libskrift_glyph *glyph1,
                        struct libskrift_glyph *glyph2, struct libskrift_glyph **glyphp)
 {
 	int16_t x1a, x1b, x2a, x2b, y1a, y1b, y2a, y2b, x1, x2, y1, y2;
-	size_t width, height, r, c, size = 1, psize = 1;
+	size_t width, height, r, c, size, psize;
 	size_t src_off, dest_off, src_linesize, dest_linesize;
 
-	if (ctx->rendering.smoothing == LIBSKRIFT_SUBPIXEL)
-		size = psize = 3;
+	(void) ctx;
+
+	psize = glyph1->size / ((size_t)glyph1->width * (size_t)glyph1->height);
 
 	x1a = glyph1->x;
 	x1b = glyph2->x;
@@ -29,6 +30,7 @@ libskrift_merge_glyphs(LIBSKRIFT_CONTEXT *ctx, struct libskrift_glyph *glyph1,
 	x2 = MAX(x2a, x2b);
 	y2 = MAX(y2a, y2b);
 
+	size = psize;
 	size *= width  = (uint16_t)(x2 - x1);
 	size *= height = (uint16_t)(y2 - y1);
 
