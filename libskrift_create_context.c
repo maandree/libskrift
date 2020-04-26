@@ -1,8 +1,13 @@
 /* See LICENSE file for copyright and license details. */
 #include "common.h"
 
+#define FORCED_FLAGS (LIBSKRIFT_NO_LIGATURES   |\
+                      LIBSKRIFT_NO_AUTOHINTING |\
+                      LIBSKRIFT_NO_AUTOKERNING)
+
 #define IMPLEMENTED_FLAGS (LIBSKRIFT_CORRECT_GAMMA |\
-                           LIBSKRIFT_REMOVE_GAMMA) /* libschrift does not add gamma, so not handling is required */
+                           LIBSKRIFT_REMOVE_GAMMA  |\
+                           FORCED_FLAGS) /* libschrift does not add gamma, so not handling is required */
 
 #define HAVE_MULTIPLE_FLAGS(HAVE, CHECK) (((HAVE) & (CHECK)) & (((HAVE) & (CHECK)) - 1))
 
@@ -12,8 +17,16 @@
 static const struct libskrift_rendering default_rendering = LIBSKRIFT_DEFAULT_RENDERING;
 
 int
-libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT *font, const struct libskrift_rendering *rendering, double height)
+libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT **fonts, size_t nfonts, double height,
+                         const struct libskrift_rendering *rendering)
 {
+	size_t i;
+
+	if (!nfonts) {
+		errno = EINVAL;
+		return -1;
+	}
+
 	if (rendering) {
 		if (HAVE_MULTIPLE_FLAGS(rendering->flags, LIBSKRIFT_CORRECT_GAMMA | LIBSKRIFT_REMOVE_GAMMA) ||
 		    !rendering->grid_fineness) {
@@ -22,13 +35,16 @@ libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT *font, const s
 		}
 	}
 
-	*ctxp = calloc(1, sizeof(**ctxp));
+	*ctxp = calloc(1, offsetof(LIBSKRIFT_CONTEXT, fonts) + nfonts * sizeof(*(*ctxp)->fonts));
 	if (!*ctxp)
 		return -1;
 
-	(*ctxp)->font               = font;
-	(*ctxp)->schrift_ctx.font   = font->font;
+	(*ctxp)->schrift_ctx.font   = fonts[0]->font;
 	(*ctxp)->schrift_ctx.yScale = height;
+	for (i = 0; i < nfonts; i++) {
+		(*ctxp)->fonts[i] = fonts[i];
+		fonts[i]->refcount += 1;
+	}
 
 	if (rendering) {
 		memcpy(&(*ctxp)->rendering, rendering, sizeof(*rendering));
@@ -47,6 +63,7 @@ libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT *font, const s
 	(*ctxp)->rendering.struct_version      = LIBSKRIFT_RENDERING_STRUCT_VERSION;
 	(*ctxp)->rendering.hinting             = LIBSKRIFT_NONE;
 	(*ctxp)->rendering.flags              &= IMPLEMENTED_FLAGS;
+	(*ctxp)->rendering.flags              |= FORCED_FLAGS;
 	(*ctxp)->rendering.grid_fineness       = 1;
 	(*ctxp)->rendering.kerning             = 0;
 	(*ctxp)->rendering.interletter_spacing = 0;
@@ -78,6 +95,5 @@ libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT *font, const s
 		}
 	}
 
-	font->refcount += 1;
 	return 0;
 }

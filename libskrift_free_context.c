@@ -5,7 +5,8 @@ void
 libskrift_free_context(LIBSKRIFT_CONTEXT *ctx)
 {
 	if (ctx) {
-		libskrift_close_font(ctx->font);
+		while (ctx->nfonts--)
+			libskrift_close_font(ctx->fonts[ctx->nfonts]);
 		free(ctx);
 	}
 }

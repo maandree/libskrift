@@ -56,7 +56,10 @@ enum libskrift_hinting {
 #define LIBSKRIFT_REGRESS_TO_GRID     0x00000400U /* Combine with LIBSKRIFT_ADVANCE_TO_GRID for closest alternative */
 #define LIBSKRIFT_USE_SUBPIXEL_GRID   0x00000800U
 #define LIBSKRIFT_VERTICAL_TEXT       0x00001000U
-#define LIBSKRIFT_AUTOHINTING         0x00002000U
+#define LIBSKRIFT_AUTOHINTING         0x00002000U /* Use autohinter even if hint information exists */
+#define LIBSKRIFT_NO_AUTOHINTING      0x00004000U /* Use autohinter if no hint information exist */
+#define LIBSKRIFT_AUTOKERNING         0x00008000U /* Use autokerner even if kerning information exists */
+#define LIBSKRIFT_NO_AUTOKERNING      0x00010000U /* Use autokerner if no kerning information exist */
 
 struct libskrift_rendering {
 	int struct_version;
@@ -164,7 +167,7 @@ void libskrift_close_font(LIBSKRIFT_FONT *);
 
 
 _LIBSKRIFT_GCC_ONLY(__attribute__((__nonnull__(1, 2))))
-int libskrift_create_context(LIBSKRIFT_CONTEXT **, LIBSKRIFT_FONT *, const struct libskrift_rendering *, double);
+int libskrift_create_context(LIBSKRIFT_CONTEXT **, LIBSKRIFT_FONT **, size_t, double, const struct libskrift_rendering *);
 
 void libskrift_free_context(LIBSKRIFT_CONTEXT *);
 
