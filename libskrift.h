@@ -167,7 +167,7 @@ void libskrift_close_font(LIBSKRIFT_FONT *);
 
 
 _LIBSKRIFT_GCC_ONLY(__attribute__((__nonnull__(1, 2))))
-int libskrift_create_context(LIBSKRIFT_CONTEXT **, LIBSKRIFT_FONT **, size_t, double, const struct libskrift_rendering *);
+int libskrift_create_context(LIBSKRIFT_CONTEXT **, LIBSKRIFT_FONT **, size_t, double, const struct libskrift_rendering *, void *);
 
 void libskrift_free_context(LIBSKRIFT_CONTEXT *);
 

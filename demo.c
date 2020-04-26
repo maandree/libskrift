@@ -25,7 +25,7 @@ main(void)
 		return -1;
 	}
 	height = libskrift_points_to_pixels(72, &rendering);
-	if (libskrift_create_context(&ctx, &font, 1, height, &rendering)) {
+	if (libskrift_create_context(&ctx, &font, 1, height, &rendering, NULL)) {
 		perror("libskrift_create_context");
 		return -1;
 	}

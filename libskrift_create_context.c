@@ -18,9 +18,11 @@ static const struct libskrift_rendering default_rendering = LIBSKRIFT_DEFAULT_RE
 
 int
 libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT **fonts, size_t nfonts, double height,
-                         const struct libskrift_rendering *rendering)
+                         const struct libskrift_rendering *rendering, void *caching)
 {
 	size_t i;
+
+	(void) caching;
 
 	if (!nfonts) {
 		errno = EINVAL;
