@@ -43,41 +43,40 @@ enum libskrift_hinting {
 	LIBSKRIFT_FULL     = 100
 };
 
-enum libskrift_rendering_flags {
-	LIBSKRIFT_CORRECT_GAMMA       = 0x0001,
-	LIBSKRIFT_REMOVE_GAMMA        = 0x0002,
-	LIBSKRIFT_Y_INCREASES_UPWARDS = 0x0004, /* SFT_DOWNWARD_Y otherwise */
-	LIBSKRIFT_FLIP_TEXT           = 0x0008,
-	LIBSKRIFT_MIRROR_TEXT         = 0x0010,
-	LIBSKRIFT_MIRROR_CHARS        = 0x0020,
-	LIBSKRIFT_TRANSPOSE_TEXT      = 0x0040,
-	LIBSKRIFT_TRANSPOSE_CHARS     = 0x0080,
-	LIBSKRIFT_NO_LIGATURES        = 0x0100,
-	LIBSKRIFT_ADVANCE_TO_GRID     = 0x0200,
-	LIBSKRIFT_REGRESS_TO_GRID     = 0x0400, /* Combine with LIBSKRIFT_ADVANCE_TO_GRID for closest alternative */
-	LIBSKRIFT_USE_SUBPIXEL_GRID   = 0x0800,
-	LIBSKRIFT_VERTICAL_TEXT       = 0x1000
-};
+#define LIBSKRIFT_CORRECT_GAMMA       0x00000001U
+#define LIBSKRIFT_REMOVE_GAMMA        0x00000002U
+#define LIBSKRIFT_Y_INCREASES_UPWARDS 0x00000004U /* SFT_DOWNWARD_Y otherwise */
+#define LIBSKRIFT_FLIP_TEXT           0x00000008U
+#define LIBSKRIFT_MIRROR_TEXT         0x00000010U
+#define LIBSKRIFT_MIRROR_CHARS        0x00000020U
+#define LIBSKRIFT_TRANSPOSE_TEXT      0x00000040U
+#define LIBSKRIFT_TRANSPOSE_CHARS     0x00000080U
+#define LIBSKRIFT_NO_LIGATURES        0x00000100U
+#define LIBSKRIFT_ADVANCE_TO_GRID     0x00000200U
+#define LIBSKRIFT_REGRESS_TO_GRID     0x00000400U /* Combine with LIBSKRIFT_ADVANCE_TO_GRID for closest alternative */
+#define LIBSKRIFT_USE_SUBPIXEL_GRID   0x00000800U
+#define LIBSKRIFT_VERTICAL_TEXT       0x00001000U
+#define LIBSKRIFT_AUTOHINTING         0x00002000U
 
 struct libskrift_rendering {
 	int struct_version;
-	enum libskrift_subpixel_order  subpixel_order;
-	enum libskrift_smoothing       smoothing;
-	enum libskrift_hinting         hinting;
-	enum libskrift_rendering_flags flags;
-	int    grid_fineness;
-	double horizontal_dpi;
-	double vertical_dpi;
-	double kerning;
-	double interletter_spacing;
-	double prestroke_transformation_rotation[4];
-	double left_transformation[6];
-	double right_transformation[6];
-	double top_transformation[6];
-	double bottom_transformation[6];
-	double poststroke_transformation_rotation[4];
-	double char_transformation[6];
-	double text_transformation[6];
+	enum libskrift_subpixel_order subpixel_order;
+	enum libskrift_smoothing      smoothing;
+	enum libskrift_hinting        hinting;
+	uint32_t flags;
+	int      grid_fineness;
+	double   horizontal_dpi;
+	double   vertical_dpi;
+	double   kerning;
+	double   interletter_spacing;
+	double   prestroke_transformation_rotation[4];
+	double   left_transformation[6];
+	double   right_transformation[6];
+	double   top_transformation[6];
+	double   bottom_transformation[6];
+	double   poststroke_transformation_rotation[4];
+	double   char_transformation[6];
+	double   text_transformation[6];
 };
 
 struct libskrift_glyph {
