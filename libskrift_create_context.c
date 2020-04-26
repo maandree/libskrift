@@ -41,6 +41,7 @@ libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT **fonts, size_
 
 	(*ctxp)->schrift_ctx.font   = fonts[0]->font;
 	(*ctxp)->schrift_ctx.yScale = height;
+	(*ctxp)->nfonts             = nfonts;
 	for (i = 0; i < nfonts; i++) {
 		(*ctxp)->fonts[i] = fonts[i];
 		fonts[i]->refcount += 1;
