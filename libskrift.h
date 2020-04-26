@@ -55,7 +55,8 @@ enum libskrift_rendering_flags {
 	LIBSKRIFT_NO_LIGATURES        = 0x0100,
 	LIBSKRIFT_ADVANCE_TO_GRID     = 0x0200,
 	LIBSKRIFT_REGRESS_TO_GRID     = 0x0400, /* Combine with LIBSKRIFT_ADVANCE_TO_GRID for closest alternative */
-	LIBSKRIFT_USE_SUBPIXEL_GRID   = 0x0800
+	LIBSKRIFT_USE_SUBPIXEL_GRID   = 0x0800,
+	LIBSKRIFT_VERTICAL_TEXT       = 0x1000
 };
 
 struct libskrift_rendering {
@@ -64,6 +65,7 @@ struct libskrift_rendering {
 	enum libskrift_smoothing       smoothing;
 	enum libskrift_hinting         hinting;
 	enum libskrift_rendering_flags flags;
+	int    grid_fineness;
 	double horizontal_dpi;
 	double vertical_dpi;
 	double kerning;
@@ -100,6 +102,7 @@ struct libskrift_saved_grapheme {
 	.smoothing                          = LIBSKRIFT_GREYSCALE,\
 	.hinting                            = LIBSKRIFT_FULL,\
 	.flags                              = 0,\
+	.grid_fineness                      = 1,\
 	.horizontal_dpi                     = (double)1920 * 254 / 5180,\
 	.vertical_dpi                       = (double)1200 * 254 / 3240,\
 	.kerning                            = 1,\

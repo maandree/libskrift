@@ -15,7 +15,8 @@ int
 libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT *font, const struct libskrift_rendering *rendering, double height)
 {
 	if (rendering) {
-		if (HAVE_MULTIPLE_FLAGS(rendering->flags, LIBSKRIFT_CORRECT_GAMMA | LIBSKRIFT_REMOVE_GAMMA)) {
+		if (HAVE_MULTIPLE_FLAGS(rendering->flags, LIBSKRIFT_CORRECT_GAMMA | LIBSKRIFT_REMOVE_GAMMA) ||
+		    !rendering->grid_fineness) {
 			errno = EINVAL;
 			return -1;
 		}
@@ -31,7 +32,6 @@ libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT *font, const s
 
 	if (rendering) {
 		memcpy(&(*ctxp)->rendering, rendering, sizeof(*rendering));
-
 		COPY_ARRAY((*ctxp)->rendering, default_rendering, prestroke_transformation_rotation);
 		COPY_ARRAY((*ctxp)->rendering, default_rendering, left_transformation);
 		COPY_ARRAY((*ctxp)->rendering, default_rendering, right_transformation);
@@ -47,6 +47,7 @@ libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT *font, const s
 	(*ctxp)->rendering.struct_version      = LIBSKRIFT_RENDERING_STRUCT_VERSION;
 	(*ctxp)->rendering.hinting             = LIBSKRIFT_NONE;
 	(*ctxp)->rendering.flags              &= IMPLEMENTED_FLAGS;
+	(*ctxp)->rendering.grid_fineness       = 1;
 	(*ctxp)->rendering.kerning             = 0;
 	(*ctxp)->rendering.interletter_spacing = 0;
 
