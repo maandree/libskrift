@@ -1,0 +1,75 @@
+libskrift is a text drawing library for C that is based on libschrift.
+
+The name:
+
+	Schrift in libschift is German for “font” (can also mean “scripture”),
+	skrift in libskrift is Swedish for “scripture” (cannot mean “font”).
+
+
+Currently implemented:
+
+	Anti-aliased rendering.
+
+	Subpixel rendering (RGB, BGR, both horizontal and vertical).
+
+	DPI support. (Points, inches, and millimeters can be
+	exactly converted pixels.)
+	(Both horizonal and vertical resolution can be specified.)
+
+	Drawing coloured text with 3 primaries, alpha and opacity,
+	(100 % opacity but 0 % alpha will, when drawing on an opaque
+	surface cut out the text so it is transparent instead of
+	opaque where the text is.)
+
+	Drawing on RGB, XRGB, ARGB, and RGBA with 8-bit, 16-bit,
+	32-bit, and 64-bit subpixels, RGB, ARGB, and RGBA with
+	`float`, `double`, and `long double`, with either
+	premultipled or non-premultipied alpha.
+	(The "RGB" in all these formats can be any primitive, but
+	the screen's is assumed for subpixel rendering, pre- and
+	postprocessors can be used to change colour space if
+	required.)
+
+	Drawing on surfaces encoded with different endians: host
+	endian, big endian, or little endian, either on pixel level
+	or subpixel level.
+
+	sRGB gamma function.
+
+
+Pending support in libschift:
+
+	Aliased rendering.
+
+	Hinting.
+	(Better subpixel rendering requires subpixel aware hinting.)
+
+	Affine transformations on glyphs, texts, part of outline.
+
+	Kerning using font information.
+
+	Proper grapheme cluster support.
+
+
+Not implemented yet
+
+	Glyph caching.
+
+	Normalise text when glyphs ar missing.
+
+	Fallback fonts.
+
+	Font metrics.
+
+	Autokerning.
+
+	Vertical text.
+
+	Inter-character spacing.
+
+
+Out of scope:
+
+	Bidirection text.
+
+	Text justification.
