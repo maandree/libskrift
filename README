@@ -17,7 +17,7 @@ Currently implemented:
 	(Both horizonal and vertical resolution can be specified.)
 
 	Drawing coloured text with 3 primaries, alpha and opacity,
-	(100 % opacity but 0 % alpha will, when drawing on an opaque
+	(100% opacity but 0% alpha will, when drawing on an opaque
 	surface cut out the text so it is transparent instead of
 	opaque where the text is.)
 
