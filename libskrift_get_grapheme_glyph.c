@@ -6,18 +6,20 @@ libskrift_get_grapheme_glyph(LIBSKRIFT_CONTEXT *ctx, libskrift_codepoint_t codep
                              double cursor_x, double cursor_y, struct libskrift_glyph **glyphp)
 {
 	struct SFT_Char sft_chr;
+	struct SFT sft_ctx;
 	size_t size = 1, width1, width2, width3, osize, off, r, c, i;
 	int top = 0, left = 0, right = 0, bottom = 0;
 	uint16_t width, height, vmul = 1, hmul = 1;
 	uint8_t *image, *in_image;
 
 	memset(&sft_chr, 0, sizeof(sft_chr));
+	sft_ctx = ctx->schrift_ctx;
 
-	ctx->schrift_ctx.x = cursor_x * (ctx->subpixel_horizontally ? 3 : 1);
-	ctx->schrift_ctx.y = cursor_y * (ctx->subpixel_vertically ? 3 : 1);
-	ctx->schrift_ctx.flags = SFT_DOWNWARD_Y | SFT_CHAR_IMAGE;
+	sft_ctx.x = cursor_x * (ctx->subpixel_horizontally ? 3 : 1);
+	sft_ctx.y = cursor_y * (ctx->subpixel_vertically ? 3 : 1);
+	sft_ctx.flags = SFT_DOWNWARD_Y | SFT_CHAR_IMAGE;
 
-	if (sft_char(&ctx->schrift_ctx, codepoint, &sft_chr))
+	if (sft_char(&sft_ctx, codepoint, &sft_chr))
 		return -1;
 
 	if (ctx->subpixel_horizontally) {

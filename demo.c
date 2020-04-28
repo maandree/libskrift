@@ -11,7 +11,7 @@ main(void)
 	LIBSKRIFT_CONTEXT *ctx;
 	struct libskrift_image image = {LIBSKRIFT_R8G8B8A8, LIBSKRIFT_HOST_SUBPIXEL, 0, 800, 600, NULL, NULL, NULL};
 	struct libskrift_rendering rendering = LIBSKRIFT_DEFAULT_RENDERING;
-	struct libskrift_colour colour = LIBSKRIFT_PREMULTIPLY(1, 1, .80f, .50f, .20f);
+	struct libskrift_colour colour = LIBSKRIFT_PREMULTIPLY(0.8f, 0.25f, .80f, .50f, .20f);
 	double height;
 	size_t size, i;
 
@@ -42,7 +42,7 @@ main(void)
 		((uint8_t *)image.image)[i + 0] = 32U;
 		((uint8_t *)image.image)[i + 1] = 48U;
 		((uint8_t *)image.image)[i + 2] = 64U;
-		((uint8_t *)image.image)[i + 3] = 192U;
+		((uint8_t *)image.image)[i + 3] = 250U;
 	}
 
 	if (libskrift_draw_text(ctx, "hello world", &colour, 0, 300, &image) < 0) {
