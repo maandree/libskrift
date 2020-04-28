@@ -86,9 +86,9 @@ do {
 					bl = RMAP(*B) * RMAP(*A) * (1 - opacity * gly[c + bi]) + gly[c + bi] * blue;
 					al = RMAP(*A) * (1 - opacity * high) + high * alpha;
 					if (fpclassify(al) != FP_ZERO) {
-						*R = MAP(re);
-						*G = MAP(gr);
-						*B = MAP(bl);
+						*R = MAP(re / al);
+						*G = MAP(gr / al);
+						*B = MAP(bl / al);
 						*A = MAP(al);
 					} else {
 						*R = *G = *B = *A = 0;
@@ -104,9 +104,9 @@ do {
 					bl = RMAP(*B) * RMAP(*A) * transparency + gly[c + ri] * blue;
 					al = RMAP(*A) * transparency + gly[c + ri] * alpha;
 					if (fpclassify(al) != FP_ZERO) {
-						*R = MAP(re);
-						*G = MAP(gr);
-						*B = MAP(bl);
+						*R = MAP(re / al);
+						*G = MAP(gr / al);
+						*B = MAP(bl / al);
 						*A = MAP(al);
 					} else {
 						*R = *G = *B = *A = 0;
