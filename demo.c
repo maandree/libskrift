@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <grapheme.h>
-
 int
 main(void)
 {
