@@ -4,9 +4,11 @@ CONFIGFILE = config.mk
 include $(CONFIGFILE)
 
 OBJ =\
+	libskrift_apply_glyph.o\
 	libskrift_calculate_dpi.o\
 	libskrift_close_font.o\
 	libskrift_create_context.o\
+	libskrift_format_settings.o\
 	libskrift_free_context.o\
 	libskrift_get_grapheme_glyph.o\
 	libskrift_get_cluster_glyph.o\
@@ -18,13 +20,17 @@ OBJ =\
 	libskrift_open_font_fd.o\
 	libskrift_open_font_file.o\
 	libskrift_open_font_mem.o\
-	libskrift_points_to_pixels.o
+	libskrift_points_to_pixels.o\
+	libskrift_srgb_postprocess.o\
+	libskrift_srgb_preprocess.o
 
 LIB_HDR =\
 	libskrift.h
 
 HDR =\
 	common.h\
+	apply-glyph.h\
+	srgb-gamma.h\
 	$(LIB_HDR)
 
 all: libskrift.a demo

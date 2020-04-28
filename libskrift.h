@@ -22,6 +22,49 @@ typedef struct libskrift_font LIBSKRIFT_FONT;
 typedef uint_least32_t libskrift_codepoint_t;
 
 
+enum libskrift_format {
+	LIBSKRIFT_RAW,
+	LIBSKRIFT_R8G8B8,
+	LIBSKRIFT_X8R8G8B8,
+	LIBSKRIFT_A8R8G8B8,
+	LIBSKRIFT_R8G8B8A8,
+	LIBSKRIFT_R16G16B16,
+	LIBSKRIFT_X16R16G16B16,
+	LIBSKRIFT_A16R16G16B16,
+	LIBSKRIFT_R16G16B16A16,
+	LIBSKRIFT_R32G32B32,
+	LIBSKRIFT_X32R32G32B32,
+	LIBSKRIFT_A32R32G32B32,
+	LIBSKRIFT_R32G32B32A32,
+	LIBSKRIFT_R64G64B64,
+	LIBSKRIFT_X64R64G64B64,
+	LIBSKRIFT_A64R64G64B64,
+	LIBSKRIFT_R64G64B64A64,
+	LIBSKRIFT_RGB_FLOAT,
+	LIBSKRIFT_ARGB_FLOAT,
+	LIBSKRIFT_RGBA_FLOAT,
+	LIBSKRIFT_RGB_DOUBLE,
+	LIBSKRIFT_ARGB_DOUBLE,
+	LIBSKRIFT_RGBA_DOUBLE,
+	LIBSKRIFT_RGB_LONG_DOUBLE,
+	LIBSKRIFT_ARGB_LONG_DOUBLE,
+	LIBSKRIFT_RGBA_LONG_DOUBLE
+};
+
+enum libskrift_endian {
+	LIBSKRIFT_HOST_PIXEL,
+	LIBSKRIFT_NETWORK_PIXEL,
+	LIBSKRIFT_REVERSE_NETWORK_PIXEL,
+	LIBSKRIFT_HOST_SUBPIXEL,
+	LIBSKRIFT_NETWORK_SUBPIXEL,
+	LIBSKRIFT_REVERSE_NETWORK_SUBPIXEL
+
+#define LIBSKRIFT_BE_PIXEL    LIBSKRIFT_NETWORK_PIXEL
+#define LIBSKRIFT_BE_SUBPIXEL LIBSKRIFT_NETWORK_SUBPIXEL
+#define LIBSKRIFT_LE_PIXEL    LIBSKRIFT_REVERSE_NETWORK_PIXEL
+#define LIBSKRIFT_LE_SUBPIXEL LIBSKRIFT_REVERSE_NETWORK_SUBPIXEL
+};
+
 enum libskrift_subpixel_order {
 	LIBSKRIFT_OTHER, /* LIBSKRIFT_NONE */
 	LIBSKRIFT_RGB,
@@ -43,23 +86,24 @@ enum libskrift_hinting {
 	LIBSKRIFT_FULL     = 100
 };
 
-#define LIBSKRIFT_CORRECT_GAMMA       0x00000001U
-#define LIBSKRIFT_REMOVE_GAMMA        0x00000002U
-#define LIBSKRIFT_Y_INCREASES_UPWARDS 0x00000004U /* SFT_DOWNWARD_Y otherwise */
-#define LIBSKRIFT_FLIP_TEXT           0x00000008U
-#define LIBSKRIFT_MIRROR_TEXT         0x00000010U
-#define LIBSKRIFT_MIRROR_CHARS        0x00000020U
-#define LIBSKRIFT_TRANSPOSE_TEXT      0x00000040U
-#define LIBSKRIFT_TRANSPOSE_CHARS     0x00000080U
-#define LIBSKRIFT_NO_LIGATURES        0x00000100U
-#define LIBSKRIFT_ADVANCE_TO_GRID     0x00000200U
-#define LIBSKRIFT_REGRESS_TO_GRID     0x00000400U /* Combine with LIBSKRIFT_ADVANCE_TO_GRID for closest alternative */
-#define LIBSKRIFT_USE_SUBPIXEL_GRID   0x00000800U
-#define LIBSKRIFT_VERTICAL_TEXT       0x00001000U
-#define LIBSKRIFT_AUTOHINTING         0x00002000U /* Use autohinter even if hint information exists */
-#define LIBSKRIFT_NO_AUTOHINTING      0x00004000U /* Use autohinter if no hint information exist */
-#define LIBSKRIFT_AUTOKERNING         0x00008000U /* Use autokerner even if kerning information exists */
-#define LIBSKRIFT_NO_AUTOKERNING      0x00010000U /* Use autokerner if no kerning information exist */
+#define LIBSKRIFT_REMOVE_GAMMA         0x00000001L
+#define LIBSKRIFT_Y_INCREASES_UPWARDS  0x00000002L /* SFT_DOWNWARD_Y otherwise */
+#define LIBSKRIFT_FLIP_TEXT            0x00000004L
+#define LIBSKRIFT_MIRROR_TEXT          0x00000008L
+#define LIBSKRIFT_MIRROR_CHARS         0x00000010L
+#define LIBSKRIFT_TRANSPOSE_TEXT       0x00000020L
+#define LIBSKRIFT_TRANSPOSE_CHARS      0x00000040L
+#define LIBSKRIFT_NO_LIGATURES         0x00000080L
+#define LIBSKRIFT_ADVANCE_CHAR_TO_GRID 0x00000100L
+#define LIBSKRIFT_REGRESS_CHAR_TO_GRID 0x00000200L /* Combine with LIBSKRIFT_ADVANCE_CHAR_TO_GRID for closest alternative */
+#define LIBSKRIFT_ADVANCE_WORD_TO_GRID 0x00000400L
+#define LIBSKRIFT_REGRESS_WORD_TO_GRID 0x00000800L /* Combine with LIBSKRIFT_ADVANCE_WORD_TO_GRID for closest alternative */
+#define LIBSKRIFT_USE_SUBPIXEL_GRID    0x00001000L
+#define LIBSKRIFT_VERTICAL_TEXT        0x00002000L
+#define LIBSKRIFT_AUTOHINTING          0x00004000L /* Use autohinter even if hint information exists */
+#define LIBSKRIFT_NO_AUTOHINTING       0x00008000L /* Use autohinter if no hint information exist */
+#define LIBSKRIFT_AUTOKERNING          0x00010000L /* Use autokerner even if kerning information exists */
+#define LIBSKRIFT_NO_AUTOKERNING       0x00020000L /* Use autokerner if no kerning information exist */
 
 struct libskrift_rendering {
 	int struct_version;
@@ -95,6 +139,25 @@ struct libskrift_glyph {
 struct libskrift_saved_grapheme {
 	libskrift_codepoint_t cp;
 	size_t len;
+};
+
+struct libskrift_image {
+	enum libskrift_format format;
+	enum libskrift_endian endian;
+	int                   premultiplied;
+	uint16_t              width;
+	uint16_t              height;
+	void                (*preprocess)(struct libskrift_image *image, size_t x, size_t y, size_t width, size_t height);
+	void                (*postprocess)(struct libskrift_image *image, size_t x, size_t y, size_t width, size_t height);
+	void                 *image;
+};
+
+struct libskrift_colour {
+	double opacity; /* [0, 1] */
+	double alpha;   /* [0, .opacity] */
+	double red;     /* [0, .alpha] */
+	double green;   /* [0, .alpha] */
+	double blue;    /* [0, .alpha] */
 };
 
 
@@ -183,6 +246,18 @@ ssize_t libskrift_get_cluster_glyph(LIBSKRIFT_CONTEXT *, const char *, struct li
                                     double, double, struct libskrift_glyph **);
 
 _LIBSKRIFT_GCC_ONLY(__attribute__((__nonnull__)))
-int libskrift_merge_glyphs(LIBSKRIFT_CONTEXT *, struct libskrift_glyph *, struct libskrift_glyph *, struct libskrift_glyph **);
+int libskrift_merge_glyphs(LIBSKRIFT_CONTEXT *, const struct libskrift_glyph *, const struct libskrift_glyph *,
+                           struct libskrift_glyph **);
+
+_LIBSKRIFT_GCC_ONLY(__attribute__((__nonnull__(1, 2, 6))))
+int libskrift_apply_glyph(LIBSKRIFT_CONTEXT *, const struct libskrift_glyph *, const struct libskrift_colour *,
+                          int16_t, int16_t, struct libskrift_image *);
+
+
+_LIBSKRIFT_GCC_ONLY(__attribute__((__nonnull__)))
+void libskrift_srgb_preprocess(struct libskrift_image *, size_t, size_t, size_t, size_t);
+
+_LIBSKRIFT_GCC_ONLY(__attribute__((__nonnull__)))
+void libskrift_srgb_postprocess(struct libskrift_image *, size_t, size_t, size_t, size_t);
 
 #endif

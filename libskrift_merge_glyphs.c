@@ -4,14 +4,14 @@
 /* TODO How common are grapheme clusters with more than two glyphs? Should we need a variadic version? */
 
 int
-libskrift_merge_glyphs(LIBSKRIFT_CONTEXT *ctx, struct libskrift_glyph *glyph1,
-                       struct libskrift_glyph *glyph2, struct libskrift_glyph **glyphp)
+libskrift_merge_glyphs(LIBSKRIFT_CONTEXT *ctx, const struct libskrift_glyph *glyph1,
+                       const struct libskrift_glyph *glyph2, struct libskrift_glyph **glyphp)
 {
 	int16_t x1a, x1b, x2a, x2b, y1a, y1b, y2a, y2b, x1, x2, y1, y2;
 	size_t width, height, r, c, size, psize;
 	size_t src_off, dest_off, src_linesize, dest_linesize;
 
-	psize = glyph1->size / ((size_t)glyph1->width * (size_t)glyph1->height); 
+	psize = ctx->rendering.smoothing ? 3 : 1;
 
 	x1a = glyph1->x;
 	x1b = glyph2->x;
@@ -54,15 +54,31 @@ libskrift_merge_glyphs(LIBSKRIFT_CONTEXT *ctx, struct libskrift_glyph *glyph1,
 	src_linesize = glyph2->width * psize;
 	dest_off  = (size_t)(glyph2->y - y1) * dest_linesize;
 	dest_off += (size_t)(glyph2->x - x1) * psize;
+
+	/* TODO only use merging on actual overlap */
+#ifndef OR_MERGE
 	if (ctx->rendering.smoothing) {
+#ifdef SUM_MERGE
+		unsigned sum;
+		for (r = src_off = 0; r < glyph2->height; r++, dest_off += dest_linesize, src_off += src_linesize) {
+			for (c = 0; c < src_linesize; c++) {
+				sum = (unsigned)(*glyphp)->image[dest_off + c] + (unsigned)glyph2->image[src_off + c];
+				(*glyphp)->image[dest_off + c] = (uint8_t)(sum | ((sum & 0x100) - 1));
+			}
+		}
+#else
 		for (r = src_off = 0; r < glyph2->height; r++, dest_off += dest_linesize, src_off += src_linesize)
 			for (c = 0; c < src_linesize; c++)
 				(*glyphp)->image[dest_off + c] = MAX((*glyphp)->image[dest_off + c], glyph2->image[src_off + c]);
+#endif
 	} else {
+#endif
 		for (r = src_off = 0; r < glyph2->height; r++, dest_off += dest_linesize, src_off += src_linesize)
 			for (c = 0; c < src_linesize; c++)
 				(*glyphp)->image[dest_off + c] |= glyph2->image[src_off + c];
+#ifndef OR_MERGE
 	}
+#endif
 
 	return 0;
 }

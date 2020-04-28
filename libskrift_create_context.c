@@ -5,11 +5,8 @@
                       LIBSKRIFT_NO_AUTOHINTING |\
                       LIBSKRIFT_NO_AUTOKERNING)
 
-#define IMPLEMENTED_FLAGS (LIBSKRIFT_CORRECT_GAMMA |\
-                           LIBSKRIFT_REMOVE_GAMMA  |\
+#define IMPLEMENTED_FLAGS (LIBSKRIFT_REMOVE_GAMMA |\
                            FORCED_FLAGS) /* libschrift does not add gamma, so not handling is required */
-
-#define HAVE_MULTIPLE_FLAGS(HAVE, CHECK) (((HAVE) & (CHECK)) & (((HAVE) & (CHECK)) - 1))
 
 #define COPY_ARRAY(DEST_STRUCT, SRC_STRUCT, FIELD)\
 	memcpy((DEST_STRUCT).FIELD, (SRC_STRUCT).FIELD, sizeof((SRC_STRUCT).FIELD))
@@ -30,8 +27,7 @@ libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT **fonts, size_
 	}
 
 	if (rendering) {
-		if (HAVE_MULTIPLE_FLAGS(rendering->flags, LIBSKRIFT_CORRECT_GAMMA | LIBSKRIFT_REMOVE_GAMMA) ||
-		    !rendering->grid_fineness) {
+		if (!rendering->grid_fineness) {
 			errno = EINVAL;
 			return -1;
 		}
