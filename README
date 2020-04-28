@@ -55,7 +55,7 @@ Not implemented yet
 
 	Glyph caching.
 
-	Normalise text when glyphs ar missing.
+	Normalise text when glyphs are missing.
 
 	Fallback fonts.
 
