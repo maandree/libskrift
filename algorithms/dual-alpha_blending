@@ -1,0 +1,47 @@
+Some variable names:
+
+	C_out = some colour channel in the output
+	C_bg  = some colour channel in the background
+	C_fg  = some colour channel in the foreground
+
+	A_out = the alpha channel in the output
+	A_bg  = the alpha channel in the background
+	A_fg  = the alpha channel in the foreground
+
+
+The normal alpha blending algorithm is used render
+a translucent object over another translucent object.
+The alpha blending algorithm is:
+
+	C_out⋅A_out = C_bg⋅A_bg⋅(1 − A_fg) + C_fg⋅A_fg
+
+	A_out = A_bg⋅(1 − A_fg) + A_fg
+
+
+libskrift expands this algorithm to allow the alpha
+channel of the foreground object to be applied unto
+the background, replacing the alpha channel,
+effectively cutting out part of the background and
+the adding the foreground, and it can do this partially,
+so that even if the background is opaque, the result
+can be translucent where the text is. This requires
+a new parameter for the foreground object (but not
+the background object): opacity (we will call this
+variable O). The new alpha blending algorithm
+(“dual-alpha blending”) is:
+
+	C_out⋅A_out = C_bg⋅A_bg⋅O⋅(1 − A_fg⋅O) + C_fg⋅A_fg⋅O
+
+	A_out = A_bg⋅O⋅(1 − A_fg⋅O) + A_fg⋅O
+
+This algorithm works as the normal alpha blending
+algorithm if the opacity is used instead of alpha,
+and alpha is set to 1, on the foregrund.
+
+
+However, since libskrift is a text drawing library,
+which subpixel rendering support, the opacity is
+multiply with the subpixel's value in the glyph, and
+they highest subpixel's value for the alpha channel
+(since it only support surfaces with per-pixel alpha
+and not per-subpixel alpha).
