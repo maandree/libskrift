@@ -10,8 +10,23 @@ libskrift_merge_glyphs(LIBSKRIFT_CONTEXT *ctx, const struct libskrift_glyph *gly
 	int16_t x1a, x1b, x2a, x2b, y1a, y1b, y2a, y2b, x1, x2, y1, y2;
 	size_t width, height, r, c, size, psize;
 	size_t src_off, dest_off, src_linesize, dest_linesize;
+	const struct libskrift_glyph *t;
 
 	psize = ctx->rendering.smoothing ? 3 : 1;
+
+	if (!(glyph1->width | glyph1->height)) {
+		t = glyph1;
+		glyph1 = glyph2;
+		glyph2 = t;
+	}
+	if (!(glyph2->width | glyph2->height)) {
+		size = offsetof(struct libskrift_glyph, image) + glyph1->size;
+		*glyphp = calloc(1, size);
+		if (!*glyphp)
+			return -1;
+		memcpy(*glyphp, glyph1, size);
+		return 0;
+	}
 
 	x1a = glyph1->x;
 	x1b = glyph2->x;

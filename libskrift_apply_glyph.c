@@ -45,10 +45,10 @@ libskrift_apply_glyph(LIBSKRIFT_CONTEXT *ctx, const struct libskrift_glyph *glyp
 	size_t img_linesize, gly_linesize, i, gly_psize, usize;
 	size_t ri, gi, bi, rj, gj, bj;
 	uint16_t x1, y1, x2, y2;
-	int16_t sx2, sy2;
+	int16_t sx1, sy1, sx2, sy2;
 	uint8_t high;
 	uint8_t *img, *img_start = image->image;
-	const uint8_t *gly = glyph->image;
+	const uint8_t *gly = glyph->image, *gly_start;
 	const uint16_t u16 = 0x0102;
 	const uint32_t u32 = 0x01020304L;
 	const uint64_t u64 = 0x0102030405060708LL;
@@ -69,30 +69,42 @@ libskrift_apply_glyph(LIBSKRIFT_CONTEXT *ctx, const struct libskrift_glyph *glyp
 		return -1;
 	}
 
-	/* Drawing area on image */
-	sx2 = (int16_t)(x + (int16_t)glyph->width);
-	sy2 = (int16_t)(y + (int16_t)glyph->height);
-	x1 = x < 0 ? 0 : (uint16_t)x;
-	y1 = y < 0 ? 0 : (uint16_t)y;
-	if (sx2 <= 0 || sy2 <= 0 || x1 >= image->width || y1 >= image->height)
+	/* Top left corner of glyph on image */
+	sx1 = (int16_t)(x + glyph->x);
+	sy1 = (int16_t)(y + glyph->y);
+
+	/* Post-bottom right corner of glyph on image */
+	sx2 = (int16_t)(sx1 + (int16_t)glyph->width);
+	sy2 = (int16_t)(sy1 + (int16_t)glyph->height);
+	if (sx2 <= 0 || sy2 <= 0)
 		return 0;
+
+	/* First pixel in image to draw on */
+	x1 = sx1 < 0 ? 0 : (uint16_t)sx1;
+	y1 = sy1 < 0 ? 0 : (uint16_t)sy1;
+	if (x1 >= image->width || y1 >= image->height)
+		return 0;
+
+	/* Post-last pixel in image to draw on */
+	sx2 = (int16_t)(sx1 + (int16_t)glyph->width);
+	sy2 = (int16_t)(sy1 + (int16_t)glyph->height);
 	x2 = (uint16_t)sx2 < image->width  ? (uint16_t)sx2 : image->width;
 	y2 = (uint16_t)sy2 < image->height ? (uint16_t)sy2 : image->height;
-	sx2 = (int16_t)x2;
-	sy2 = (int16_t)y2;
 
-	/* Drawing area on glyph */
-	startc = x <= 0 ? 0 : (size_t)-x;
-	startr = y <= 0 ? 0 : (size_t)-y;
-	endc = x2 < image->width  ? glyph->width  : (uint16_t)(sx2 - x);
-	endr = y2 < image->height ? glyph->height : (uint16_t)(sy2 - y);
+	/* First pixel in glyph to draw */
+	startc = (uint16_t)((int16_t)x1 - sx1);
+	startr = (uint16_t)((int16_t)y1 - sy1);
+
+	/* Post-last pixel in glyph to draw*/
+	endc = (uint16_t)((int16_t)x2 - sx1);
+	endr = (uint16_t)((int16_t)y2 - sy1);
 
 	img_linesize = (size_t)image->width * psize;
 	img_start += (size_t)y1 * img_linesize;
 	img_start += (size_t)x1 * psize;
 
-	gly_psize = ctx->rendering.smoothing ? 3 : 1;
-	gly_linesize = (size_t)image->width * gly_psize;
+	gly_psize = (ctx->rendering.smoothing == LIBSKRIFT_SUBPIXEL) ? 3 : 1;
+	gly_linesize = (size_t)glyph->width * gly_psize;
 	gly += startr * gly_linesize;
 
 	usize = image->endian >= LIBSKRIFT_HOST_SUBPIXEL ? settings.spsize : psize;
@@ -180,6 +192,7 @@ libskrift_apply_glyph(LIBSKRIFT_CONTEXT *ctx, const struct libskrift_glyph *glyp
 		rj = (size_t)settings.rpos * settings.spsize;
 		gj = (size_t)settings.gpos * settings.spsize;
 		bj = (size_t)settings.bpos * settings.spsize;
+		gly_start = gly;
 		for (img = img_start, r = startr; r < endr; r++, img += img_linesize, gly += gly_linesize) {
 			for (c = startc, i = 0; c < endc; c += gly_psize, i += psize) {
 				img[i + rj] ^= gly[c + ri];
@@ -191,6 +204,7 @@ libskrift_apply_glyph(LIBSKRIFT_CONTEXT *ctx, const struct libskrift_glyph *glyp
 			ri = rj + j;
 			gi = gj + j;
 			bi = bj + j;
+			gly = gly_start;
 			for (img = img_start, r = startr; r < endr; r++, img += img_linesize, gly += gly_linesize) {
 				for (c = startc, i = 0; c < endc; c += gly_psize, i += psize) {
 					img[i + ri] = img[i + rj];

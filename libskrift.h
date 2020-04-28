@@ -184,6 +184,13 @@ struct libskrift_colour {
 
 #define LIBSKRIFT_NO_SAVED_GRAPHEME {0, 0}
 
+#define LIBSKRIFT_PREMULTIPLY(OPACITY, ALPHA, RED, GREEN, BLUE)\
+	{(OPACITY),\
+	 (ALPHA) * (OPACITY),\
+	 (RED)   * (ALPHA) * (OPACITY),\
+	 (GREEN) * (ALPHA) * (OPACITY),\
+	 (BLUE)  * (ALPHA) * (OPACITY)}
+
 
 _LIBSKRIFT_GCC_ONLY(__attribute__((__const__, __warn_unused_result__)))
 inline double
@@ -252,6 +259,10 @@ int libskrift_merge_glyphs(LIBSKRIFT_CONTEXT *, const struct libskrift_glyph *, 
 _LIBSKRIFT_GCC_ONLY(__attribute__((__nonnull__(1, 2, 6))))
 int libskrift_apply_glyph(LIBSKRIFT_CONTEXT *, const struct libskrift_glyph *, const struct libskrift_colour *,
                           int16_t, int16_t, struct libskrift_image *);
+
+_LIBSKRIFT_GCC_ONLY(__attribute__((__nonnull__(1, 2, 6))))
+int libskrift_draw_text(LIBSKRIFT_CONTEXT *, const char *, const struct libskrift_colour *,
+                        int16_t, int16_t, struct libskrift_image *);
 
 
 _LIBSKRIFT_GCC_ONLY(__attribute__((__nonnull__)))

@@ -8,6 +8,7 @@ OBJ =\
 	libskrift_calculate_dpi.o\
 	libskrift_close_font.o\
 	libskrift_create_context.o\
+	libskrift_draw_text.o\
 	libskrift_format_settings.o\
 	libskrift_free_context.o\
 	libskrift_get_grapheme_glyph.o\
