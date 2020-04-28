@@ -13,6 +13,26 @@
 
 static const struct libskrift_rendering default_rendering = LIBSKRIFT_DEFAULT_RENDERING;
 
+static int
+transformation_hook(void *hook_data, double advance, double transform[6])
+{
+	LIBSKRIFT_CONTEXT *ctx = hook_data;
+	double r1c1b = ctx->rendering.char_transformation[0], r1c1a = transform[0];
+	double r1c2b = ctx->rendering.char_transformation[1], r1c2a = transform[2];
+	double r1c3b = ctx->rendering.char_transformation[2], r1c3a = transform[4];
+	double r2c1b = ctx->rendering.char_transformation[3], r2c1a = transform[1];
+	double r2c2b = ctx->rendering.char_transformation[4], r2c2a = transform[3];
+	double r2c3b = ctx->rendering.char_transformation[5], r2c3a = transform[5];
+	transform[0] = r1c1a * r1c1b + r1c2a * r2c1b;
+	transform[2] = r1c1a * r1c2b + r1c2a * r2c2b;
+	transform[4] = r1c1a * r1c3b + r1c2a * r2c3b + r1c3a;
+	transform[1] = r2c1a * r1c1b + r2c2a * r2c1b;
+	transform[3] = r2c1a * r1c2b + r2c2a * r2c2b;
+	transform[5] = r2c1a * r1c3b + r2c2a * r2c3b + r2c3a;
+	(void) advance;
+	return 0;
+}
+
 int
 libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT **fonts, size_t nfonts, double height,
                          const struct libskrift_rendering *rendering, void *caching)
@@ -53,7 +73,6 @@ libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT **fonts, size_
 		COPY_ARRAY((*ctxp)->rendering, default_rendering, top_transformation);
 		COPY_ARRAY((*ctxp)->rendering, default_rendering, bottom_transformation);
 		COPY_ARRAY((*ctxp)->rendering, default_rendering, poststroke_transformation_rotation);
-		COPY_ARRAY((*ctxp)->rendering, default_rendering, char_transformation);
 		COPY_ARRAY((*ctxp)->rendering, default_rendering, text_transformation);
 	} else {
 		memcpy(&(*ctxp)->rendering, &default_rendering, sizeof(default_rendering));
@@ -72,6 +91,14 @@ libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT **fonts, size_
 
 	(*ctxp)->schrift_ctx.xScale = (*ctxp)->schrift_ctx.yScale;
 	(*ctxp)->schrift_ctx.xScale *= (*ctxp)->rendering.horizontal_dpi / (*ctxp)->rendering.vertical_dpi;
+	(*ctxp)->schrift_ctx.hook_data = (*ctxp);
+	if (fpclassify((*ctxp)->rendering.char_transformation[0] - 1) != FP_ZERO ||
+	    fpclassify((*ctxp)->rendering.char_transformation[1]) != FP_ZERO ||
+	    fpclassify((*ctxp)->rendering.char_transformation[2]) != FP_ZERO ||
+	    fpclassify((*ctxp)->rendering.char_transformation[3]) != FP_ZERO ||
+	    fpclassify((*ctxp)->rendering.char_transformation[4] - 1) != FP_ZERO ||
+	    fpclassify((*ctxp)->rendering.char_transformation[5]) != FP_ZERO)
+		(*ctxp)->schrift_ctx.transformation_hook = transformation_hook;
 
 	if ((*ctxp)->rendering.smoothing == LIBSKRIFT_SUBPIXEL) {
 		if ((*ctxp)->rendering.subpixel_order == LIBSKRIFT_RGB) {

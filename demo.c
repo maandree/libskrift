@@ -23,6 +23,12 @@ main(void)
 		perror("libskrift_open_font_file");
 		return -1;
 	}
+	rendering.char_transformation[0] = 1;
+	rendering.char_transformation[1] = 0.25;
+	rendering.char_transformation[2] = 0;
+	rendering.char_transformation[3] = 0;
+	rendering.char_transformation[4] = 1;
+	rendering.char_transformation[5] = 0;
 	height = libskrift_points_to_pixels(72, &rendering);
 	if (libskrift_create_context(&ctx, &font, 1, height, &rendering, NULL)) {
 		perror("libskrift_create_context");

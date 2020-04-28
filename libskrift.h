@@ -89,21 +89,22 @@ enum libskrift_hinting {
 #define LIBSKRIFT_REMOVE_GAMMA         0x00000001L
 #define LIBSKRIFT_Y_INCREASES_UPWARDS  0x00000002L /* SFT_DOWNWARD_Y otherwise */
 #define LIBSKRIFT_FLIP_TEXT            0x00000004L
-#define LIBSKRIFT_MIRROR_TEXT          0x00000008L
-#define LIBSKRIFT_MIRROR_CHARS         0x00000010L
-#define LIBSKRIFT_TRANSPOSE_TEXT       0x00000020L
-#define LIBSKRIFT_TRANSPOSE_CHARS      0x00000040L
-#define LIBSKRIFT_NO_LIGATURES         0x00000080L
-#define LIBSKRIFT_ADVANCE_CHAR_TO_GRID 0x00000100L
-#define LIBSKRIFT_REGRESS_CHAR_TO_GRID 0x00000200L /* Combine with LIBSKRIFT_ADVANCE_CHAR_TO_GRID for closest alternative */
-#define LIBSKRIFT_ADVANCE_WORD_TO_GRID 0x00000400L
-#define LIBSKRIFT_REGRESS_WORD_TO_GRID 0x00000800L /* Combine with LIBSKRIFT_ADVANCE_WORD_TO_GRID for closest alternative */
-#define LIBSKRIFT_USE_SUBPIXEL_GRID    0x00001000L
-#define LIBSKRIFT_VERTICAL_TEXT        0x00002000L
-#define LIBSKRIFT_AUTOHINTING          0x00004000L /* Use autohinter even if hint information exists */
-#define LIBSKRIFT_NO_AUTOHINTING       0x00008000L /* Use autohinter if no hint information exist */
-#define LIBSKRIFT_AUTOKERNING          0x00010000L /* Use autokerner even if kerning information exists */
-#define LIBSKRIFT_NO_AUTOKERNING       0x00020000L /* Use autokerner if no kerning information exist */
+#define LIBSKRIFT_FLIP_CHARS           0x00000008L
+#define LIBSKRIFT_MIRROR_TEXT          0x00000010L
+#define LIBSKRIFT_MIRROR_CHARS         0x00000020L
+#define LIBSKRIFT_TRANSPOSE_TEXT       0x00000040L
+#define LIBSKRIFT_TRANSPOSE_CHARS      0x00000080L
+#define LIBSKRIFT_NO_LIGATURES         0x00000100L
+#define LIBSKRIFT_ADVANCE_CHAR_TO_GRID 0x00000200L
+#define LIBSKRIFT_REGRESS_CHAR_TO_GRID 0x00000400L /* Combine with LIBSKRIFT_ADVANCE_CHAR_TO_GRID for closest alternative */
+#define LIBSKRIFT_ADVANCE_WORD_TO_GRID 0x00000800L
+#define LIBSKRIFT_REGRESS_WORD_TO_GRID 0x00001000L /* Combine with LIBSKRIFT_ADVANCE_WORD_TO_GRID for closest alternative */
+#define LIBSKRIFT_USE_SUBPIXEL_GRID    0x00002000L
+#define LIBSKRIFT_VERTICAL_TEXT        0x00004000L
+#define LIBSKRIFT_AUTOHINTING          0x00008000L /* Use autohinter even if hint information exists */
+#define LIBSKRIFT_NO_AUTOHINTING       0x00010000L /* Use autohinter if no hint information exist */
+#define LIBSKRIFT_AUTOKERNING          0x00020000L /* Use autokerner even if kerning information exists */
+#define LIBSKRIFT_NO_AUTOKERNING       0x00040000L /* Use autokerner if no kerning information exist */
 
 struct libskrift_rendering {
 	int struct_version;
