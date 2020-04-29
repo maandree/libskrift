@@ -39,20 +39,6 @@ Currently implemented:
 	Affine transformations on glyphs and texts.
 
 
-Pending support in libschift:
-
-	Aliased rendering.
-
-	Hinting.
-	(Better subpixel rendering requires subpixel aware hinting.)
-
-	Affine transformations on parts of outline.
-
-	Kerning using font information.
-
-	Proper grapheme cluster support.
-
-
 Not implemented yet
 
 	Glyph caching.
@@ -72,6 +58,20 @@ Not implemented yet
 	Text shaping.
 
 	Font searching.
+
+
+Things that require new features in libschrift
+
+	Aliased rendering.
+
+	Hinting.
+	(Better subpixel rendering requires subpixel-aware hinting.)
+
+	Affine transformations on parts of outline.
+
+	Kerning using font information.
+
+	Proper grapheme cluster support.
 
 
 Out of scope:
