@@ -36,6 +36,8 @@ Currently implemented:
 
 	sRGB gamma function.
 
+	Affine transformations on glyphs.
+
 
 Pending support in libschift:
 
@@ -44,7 +46,7 @@ Pending support in libschift:
 	Hinting.
 	(Better subpixel rendering requires subpixel aware hinting.)
 
-	Affine transformations on glyphs, texts, part of outline.
+	Affine transformations on parts of outline.
 
 	Kerning using font information.
 
@@ -52,6 +54,8 @@ Pending support in libschift:
 
 
 Not implemented yet
+
+	Affine transformations on texts.
 
 	Glyph caching.
 

@@ -4,6 +4,16 @@ CONFIGFILE = config.mk
 include $(CONFIGFILE)
 
 OBJ =\
+	libskrift_add_180_degree_rotation.o\
+	libskrift_add_270_degree_rotation.o\
+	libskrift_add_90_degree_rotation.o\
+	libskrift_add_rotation.o\
+	libskrift_add_rotation_degrees.o\
+	libskrift_add_scaling.o\
+	libskrift_add_shear.o\
+	libskrift_add_transformation.o\
+	libskrift_add_translation.o\
+	libskrift_add_transposition.o\
 	libskrift_apply_glyph.o\
 	libskrift_calculate_dpi.o\
 	libskrift_close_font.o\

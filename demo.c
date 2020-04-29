@@ -11,24 +11,19 @@ main(void)
 	LIBSKRIFT_CONTEXT *ctx;
 	struct libskrift_image image = {LIBSKRIFT_R8G8B8A8, LIBSKRIFT_HOST_SUBPIXEL, 0, 800, 600, NULL, NULL, NULL};
 	struct libskrift_rendering rendering = LIBSKRIFT_DEFAULT_RENDERING;
-	struct libskrift_colour colour = LIBSKRIFT_PREMULTIPLY(0.8f, 0.25f, .80f, .50f, .20f);
+	struct libskrift_colour colour = LIBSKRIFT_PREMULTIPLY(.80f, .50f, .80f, .50f, .20f);
 	double height;
 	size_t size, i;
 
 	rendering.smoothing      = LIBSKRIFT_SUBPIXEL;
 	rendering.subpixel_order = LIBSKRIFT_NONE;
-	rendering.flags          = 0;
+	rendering.flags          = LIBSKRIFT_MIRROR_CHARS;
 
 	if (libskrift_open_font_file(&font, DEMO_FONT)) {
 		perror("libskrift_open_font_file");
 		return -1;
 	}
-	rendering.char_transformation[0] = 1;
-	rendering.char_transformation[1] = 0.25;
-	rendering.char_transformation[2] = 0;
-	rendering.char_transformation[3] = 0;
-	rendering.char_transformation[4] = 1;
-	rendering.char_transformation[5] = 0;
+	libskrift_add_rotation_degrees(rendering.char_transformation, 10);
 	height = libskrift_points_to_pixels(72, &rendering);
 	if (libskrift_create_context(&ctx, &font, 1, height, &rendering, NULL)) {
 		perror("libskrift_create_context");

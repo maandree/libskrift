@@ -2,6 +2,7 @@
 #ifndef LIBSKRIFT_H
 #define LIBSKRIFT_H 1
 
+#include <math.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -86,25 +87,25 @@ enum libskrift_hinting {
 	LIBSKRIFT_FULL     = 100
 };
 
-#define LIBSKRIFT_REMOVE_GAMMA         0x00000001L
-#define LIBSKRIFT_Y_INCREASES_UPWARDS  0x00000002L /* SFT_DOWNWARD_Y otherwise */
-#define LIBSKRIFT_FLIP_TEXT            0x00000004L
-#define LIBSKRIFT_FLIP_CHARS           0x00000008L
-#define LIBSKRIFT_MIRROR_TEXT          0x00000010L
-#define LIBSKRIFT_MIRROR_CHARS         0x00000020L
-#define LIBSKRIFT_TRANSPOSE_TEXT       0x00000040L
-#define LIBSKRIFT_TRANSPOSE_CHARS      0x00000080L
-#define LIBSKRIFT_NO_LIGATURES         0x00000100L
-#define LIBSKRIFT_ADVANCE_CHAR_TO_GRID 0x00000200L
-#define LIBSKRIFT_REGRESS_CHAR_TO_GRID 0x00000400L /* Combine with LIBSKRIFT_ADVANCE_CHAR_TO_GRID for closest alternative */
-#define LIBSKRIFT_ADVANCE_WORD_TO_GRID 0x00000800L
-#define LIBSKRIFT_REGRESS_WORD_TO_GRID 0x00001000L /* Combine with LIBSKRIFT_ADVANCE_WORD_TO_GRID for closest alternative */
-#define LIBSKRIFT_USE_SUBPIXEL_GRID    0x00002000L
-#define LIBSKRIFT_VERTICAL_TEXT        0x00004000L
-#define LIBSKRIFT_AUTOHINTING          0x00008000L /* Use autohinter even if hint information exists */
-#define LIBSKRIFT_NO_AUTOHINTING       0x00010000L /* Use autohinter if no hint information exist */
-#define LIBSKRIFT_AUTOKERNING          0x00020000L /* Use autokerner even if kerning information exists */
-#define LIBSKRIFT_NO_AUTOKERNING       0x00040000L /* Use autokerner if no kerning information exist */
+#define LIBSKRIFT_REMOVE_GAMMA         UINT32_C(0x00000001)
+#define LIBSKRIFT_Y_INCREASES_UPWARDS  UINT32_C(0x00000002) /* SFT_DOWNWARD_Y otherwise */
+#define LIBSKRIFT_FLIP_TEXT            UINT32_C(0x00000004)
+#define LIBSKRIFT_FLIP_CHARS           UINT32_C(0x00000008)
+#define LIBSKRIFT_MIRROR_TEXT          UINT32_C(0x00000010)
+#define LIBSKRIFT_MIRROR_CHARS         UINT32_C(0x00000020)
+#define LIBSKRIFT_TRANSPOSE_TEXT       UINT32_C(0x00000040)
+#define LIBSKRIFT_TRANSPOSE_CHARS      UINT32_C(0x00000080)
+#define LIBSKRIFT_NO_LIGATURES         UINT32_C(0x00000100)
+#define LIBSKRIFT_ADVANCE_CHAR_TO_GRID UINT32_C(0x00000200)
+#define LIBSKRIFT_REGRESS_CHAR_TO_GRID UINT32_C(0x00000400) /* Combine with LIBSKRIFT_ADVANCE_CHAR_TO_GRID for closest alternative */
+#define LIBSKRIFT_ADVANCE_WORD_TO_GRID UINT32_C(0x00000800)
+#define LIBSKRIFT_REGRESS_WORD_TO_GRID UINT32_C(0x00001000) /* Combine with LIBSKRIFT_ADVANCE_WORD_TO_GRID for closest alternative */
+#define LIBSKRIFT_USE_SUBPIXEL_GRID    UINT32_C(0x00002000)
+#define LIBSKRIFT_VERTICAL_TEXT        UINT32_C(0x00004000)
+#define LIBSKRIFT_AUTOHINTING          UINT32_C(0x00008000) /* Use autohinter even if hint information exists */
+#define LIBSKRIFT_NO_AUTOHINTING       UINT32_C(0x00010000) /* Use autohinter if no hint information exist */
+#define LIBSKRIFT_AUTOKERNING          UINT32_C(0x00020000) /* Use autokerner even if kerning information exists */
+#define LIBSKRIFT_NO_AUTOKERNING       UINT32_C(0x00040000) /* Use autokerner if no kerning information exist */
 
 struct libskrift_rendering {
 	int struct_version;
@@ -271,5 +272,86 @@ void libskrift_srgb_preprocess(struct libskrift_image *, size_t, size_t, size_t,
 
 _LIBSKRIFT_GCC_ONLY(__attribute__((__nonnull__)))
 void libskrift_srgb_postprocess(struct libskrift_image *, size_t, size_t, size_t, size_t);
+
+
+inline void
+libskrift_add_transformation(double m[restrict 6], const double tm[restrict 6])
+{
+	double a = m[0], b = m[1], c = m[2];
+	double d = m[3], e = m[4], f = m[5];
+	m[0] = tm[0] * a + tm[1] * d;
+	m[1] = tm[0] * b + tm[1] * e;
+	m[2] = tm[0] * c + tm[1] * f + tm[2];
+	m[3] = tm[3] * a + tm[4] * d;
+	m[4] = tm[3] * b + tm[4] * e;
+	m[5] = tm[3] * c + tm[4] * f + tm[5];
+}
+
+inline void
+libskrift_add_rotation(double m[6], double radians)
+{
+	double c = cos(-radians), s = sin(-radians);
+	libskrift_add_transformation(m, (double []){c, -s, 0, s, c, 0});
+}
+
+inline void
+libskrift_add_rotation_degrees(double m[6], double degrees)
+{
+	libskrift_add_rotation(m, degrees * (double)0.017453292519943295f);
+}
+
+inline void
+libskrift_add_90_degree_rotation(double m[6])
+{
+	double a = m[0], b = m[1], c = m[2];
+	m[0] = m[3], m[1] = m[4], m[2] = m[5];
+	m[3] = -a,   m[4] = -b,   m[5] = -c;
+}
+
+inline void
+libskrift_add_180_degree_rotation(double m[6])
+{
+	m[0] = -m[0], m[1] = -m[1], m[2] = -m[2];
+	m[3] = -m[3], m[4] = -m[4], m[5] = -m[5];
+}
+
+inline void
+libskrift_add_270_degree_rotation(double m[6])
+{
+	double a = m[0], b = m[1], c = m[2];
+	m[0] = -m[3], m[1] = -m[4], m[2] = -m[5];
+	m[3] = a,     m[4] = b,     m[5] = c;
+}
+
+inline void
+libskrift_add_scaling(double m[6], double x, double y)
+{
+	m[0] *= x, m[1] *= x, m[2] *= x;
+	m[3] *= y, m[4] *= y, m[5] *= y;
+}
+
+inline void
+libskrift_add_transposition(double m[6])
+{
+	double a = m[0], b = m[1], c = m[2];
+	m[0] = m[3], m[1] = m[4], m[2] = m[5];
+	m[3] = a,    m[4] = b,    m[5] = c;
+}
+
+inline void
+libskrift_add_shear(double m[6], double x, double y)
+{
+	double a = m[0], b = m[1], c = m[2];
+	double d = m[3], e = m[4], f = m[6];
+	m[0] += x * d, m[1] += x * e, m[2] += x * f;
+	m[3] += y * a, m[4] += y * b, m[5] += y * c;
+}
+
+inline void
+libskrift_add_translation(double m[6], double x, double y)
+{
+	m[2] += x;
+	m[5] += y;
+}
 
 #endif
