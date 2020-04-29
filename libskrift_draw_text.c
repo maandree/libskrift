@@ -7,17 +7,18 @@ libskrift_draw_text(LIBSKRIFT_CONTEXT *ctx, const char *text, const struct libsk
 {
 	struct libskrift_saved_grapheme saved = LIBSKRIFT_NO_SAVED_GRAPHEME;
 	struct libskrift_glyph *glyph;
-	double xpos = 0;
+	double xpos = 0, ypos = 0;
 	ssize_t len;
 	int r;
 
 	for (; *text; text += len) {
-		len = libskrift_get_cluster_glyph(ctx, text, &saved, xpos, 0, &glyph);
+		len = libskrift_get_cluster_glyph(ctx, text, &saved, xpos, ypos, &glyph);
 		if (len < 0)
 			return -1;
 
 		r = libskrift_apply_glyph(ctx, glyph, colour, x, y, image);
-		xpos += glyph->advance;
+		xpos += glyph->advance * ctx->x_advancement;
+		ypos += glyph->advance * ctx->y_advancement;
 		free(glyph);
 		if (r)
 			return -1;

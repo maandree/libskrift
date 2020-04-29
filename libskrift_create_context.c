@@ -39,7 +39,7 @@ transformation_hook(void *hook_data, double advance, double transform[6])
 	double m1[6] = {1, 0, 0, 0, 1, 0}, m2[6] = {1, 0, 0, 0, 1, 0};
 	if (((ctx->rendering.flags / LIBSKRIFT_MIRROR_CHARS) ^ (ctx->rendering.flags / LIBSKRIFT_MIRROR_TEXT)) & 1)
 		multiply_matrices((double []){-1, 0, advance / schrift[0], 0, 1, 0}, m2, m1);
-	multiply_matrices(ctx->rendering.char_transformation, m1, m2);
+	multiply_matrices(ctx->transformation, m1, m2);
 	multiply_matrices(schrift, m2, m1);
 	transform[0] = m1[0];
 	transform[2] = m1[1];
@@ -76,6 +76,8 @@ libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT **fonts, size_
 
 	(*ctxp)->schrift_ctx.font   = fonts[0]->font;
 	(*ctxp)->schrift_ctx.yScale = height;
+	(*ctxp)->x_advancement      = 1;
+	(*ctxp)->y_advancement      = 0;
 	(*ctxp)->nfonts             = nfonts;
 	for (i = 0; i < nfonts; i++) {
 		(*ctxp)->fonts[i] = fonts[i];
@@ -90,7 +92,6 @@ libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT **fonts, size_
 		COPY_ARRAY((*ctxp)->rendering, default_rendering, top_transformation);
 		COPY_ARRAY((*ctxp)->rendering, default_rendering, bottom_transformation);
 		COPY_ARRAY((*ctxp)->rendering, default_rendering, poststroke_transformation_rotation);
-		COPY_ARRAY((*ctxp)->rendering, default_rendering, text_transformation);
 	} else {
 		memcpy(&(*ctxp)->rendering, &default_rendering, sizeof(default_rendering));
 	}
@@ -116,8 +117,19 @@ libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT **fonts, size_
 	    fpclassify((*ctxp)->rendering.char_transformation[2]) != FP_ZERO ||
 	    fpclassify((*ctxp)->rendering.char_transformation[3]) != FP_ZERO ||
 	    fpclassify((*ctxp)->rendering.char_transformation[4] - 1) != FP_ZERO ||
-	    fpclassify((*ctxp)->rendering.char_transformation[5]) != FP_ZERO)
+	    fpclassify((*ctxp)->rendering.char_transformation[5]) != FP_ZERO ||
+	    fpclassify((*ctxp)->rendering.text_transformation[0] - 1) != FP_ZERO ||
+	    fpclassify((*ctxp)->rendering.text_transformation[1]) != FP_ZERO ||
+	    fpclassify((*ctxp)->rendering.text_transformation[2]) != FP_ZERO ||
+	    fpclassify((*ctxp)->rendering.text_transformation[3]) != FP_ZERO ||
+	    fpclassify((*ctxp)->rendering.text_transformation[4] - 1) != FP_ZERO ||
+	    fpclassify((*ctxp)->rendering.text_transformation[5]) != FP_ZERO) {
+		memcpy((*ctxp)->transformation, (*ctxp)->rendering.char_transformation, sizeof((*ctxp)->transformation));
+		libskrift_add_transformation((*ctxp)->transformation, (*ctxp)->rendering.text_transformation);
+		(*ctxp)->x_advancement = (*ctxp)->rendering.text_transformation[0];
+		(*ctxp)->y_advancement = (*ctxp)->rendering.text_transformation[3];
 		(*ctxp)->schrift_ctx.transformation_hook = transformation_hook;
+	}
 
 	if ((*ctxp)->rendering.smoothing == LIBSKRIFT_SUBPIXEL) {
 		if ((*ctxp)->rendering.subpixel_order == LIBSKRIFT_RGB) {

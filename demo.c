@@ -17,13 +17,14 @@ main(void)
 
 	rendering.smoothing      = LIBSKRIFT_SUBPIXEL;
 	rendering.subpixel_order = LIBSKRIFT_NONE;
-	rendering.flags          = LIBSKRIFT_MIRROR_CHARS;
+	rendering.flags          = LIBSKRIFT_MIRROR_CHARS * 0;
 
 	if (libskrift_open_font_file(&font, DEMO_FONT)) {
 		perror("libskrift_open_font_file");
 		return -1;
 	}
-	libskrift_add_rotation_degrees(rendering.char_transformation, 10);
+	libskrift_add_rotation_degrees(rendering.text_transformation, -10);
+	libskrift_add_shear(rendering.char_transformation, .75f, 0);
 	height = libskrift_points_to_pixels(72, &rendering);
 	if (libskrift_create_context(&ctx, &font, 1, height, &rendering, NULL)) {
 		perror("libskrift_create_context");

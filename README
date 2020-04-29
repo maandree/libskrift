@@ -36,7 +36,7 @@ Currently implemented:
 
 	sRGB gamma function.
 
-	Affine transformations on glyphs.
+	Affine transformations on glyphs and texts.
 
 
 Pending support in libschift:
@@ -54,8 +54,6 @@ Pending support in libschift:
 
 
 Not implemented yet
-
-	Affine transformations on texts.
 
 	Glyph caching.
 
