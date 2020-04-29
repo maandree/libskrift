@@ -15,9 +15,10 @@ main(void)
 	double height;
 	size_t size, i;
 
-	rendering.smoothing      = LIBSKRIFT_SUBPIXEL;
-	rendering.subpixel_order = LIBSKRIFT_NONE;
-	rendering.flags          = LIBSKRIFT_MIRROR_CHARS * 0;
+	rendering.smoothing           = LIBSKRIFT_SUBPIXEL;
+	rendering.subpixel_order      = LIBSKRIFT_NONE;
+	rendering.flags               = LIBSKRIFT_MIRROR_CHARS * 0;
+	rendering.interletter_spacing = -5;
 
 	if (libskrift_open_font_file(&font, DEMO_FONT)) {
 		perror("libskrift_open_font_file");

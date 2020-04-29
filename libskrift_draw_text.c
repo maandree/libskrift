@@ -17,8 +17,8 @@ libskrift_draw_text(LIBSKRIFT_CONTEXT *ctx, const char *text, const struct libsk
 			return -1;
 
 		r = libskrift_apply_glyph(ctx, glyph, colour, x, y, image);
-		xpos += glyph->advance * ctx->x_advancement;
-		ypos += glyph->advance * ctx->y_advancement;
+		xpos += (glyph->advance + ctx->rendering.interletter_spacing) * ctx->x_advancement;
+		ypos += (glyph->advance + ctx->rendering.interletter_spacing) * ctx->y_advancement;
 		free(glyph);
 		if (r)
 			return -1;

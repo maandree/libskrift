@@ -38,6 +38,8 @@ Currently implemented:
 
 	Affine transformations on glyphs and texts.
 
+	Inter-character spacing.
+
 
 Not implemented yet
 
@@ -52,8 +54,6 @@ Not implemented yet
 	Autokerning.
 
 	Vertical text.
-
-	Inter-character spacing.
 
 	Text shaping.
 

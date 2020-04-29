@@ -103,7 +103,6 @@ libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT **fonts, size_
 	(*ctxp)->rendering.flags              |= LIBSKRIFT_REMOVE_GAMMA; /* libschrift does not add gamma */
 	(*ctxp)->rendering.grid_fineness       = 1;
 	(*ctxp)->rendering.kerning             = 0;
-	(*ctxp)->rendering.interletter_spacing = 0;
 
 	if (!(*ctxp)->rendering.smoothing)
 		(*ctxp)->rendering.smoothing = LIBSKRIFT_GREYSCALE;
