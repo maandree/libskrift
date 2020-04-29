@@ -6,6 +6,7 @@
                       LIBSKRIFT_NO_AUTOKERNING)
 
 #define IMPLEMENTED_FLAGS (LIBSKRIFT_REMOVE_GAMMA |\
+                           LIBSKRIFT_MIRROR_TEXT  |\
                            LIBSKRIFT_MIRROR_CHARS |\
                            FORCED_FLAGS) /* libschrift does not add gamma, so not handling is required */
 

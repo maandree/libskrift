@@ -2,6 +2,7 @@
 
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <alloca.h>
 #include <endian.h>
 #include <errno.h>
 #include <math.h>
