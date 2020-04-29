@@ -2,7 +2,7 @@
 #include "common.h"
 
 static void
-reverse_text(const char *text, char *s, size_t off)
+reverse_text(const char *restrict text, char *restrict s, size_t off)
 {
 	size_t n;
 	s[off] = '\0';
