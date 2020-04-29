@@ -73,6 +73,8 @@ Things that require new features in libschrift
 
 	Proper grapheme cluster support.
 
+	Draw outline (only) with custom stroke width and shape.
+
 
 Out of scope:
 
