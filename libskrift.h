@@ -106,6 +106,7 @@ enum libskrift_hinting {
 #define LIBSKRIFT_NO_AUTOHINTING       UINT32_C(0x00010000) /* Use autohinter if no hint information exist */
 #define LIBSKRIFT_AUTOKERNING          UINT32_C(0x00020000) /* Use autokerner even if kerning information exists */
 #define LIBSKRIFT_NO_AUTOKERNING       UINT32_C(0x00040000) /* Use autokerner if no kerning information exist */
+#define LIBSKRIFT_IGNORE_IGNORABLE     UINT32_C(0x00080000) /* Ignore ignorable unhandled codepoints, such as variant selectors */
 
 struct libskrift_rendering {
 	int struct_version;
