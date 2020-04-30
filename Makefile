@@ -28,6 +28,7 @@ OBJ =\
 	libskrift_merge_glyphs.o\
 	libskrift_millimeters_to_pixels.o\
 	libskrift_open_font.o\
+	libskrift_open_font_at.o\
 	libskrift_open_font_fd.o\
 	libskrift_open_font_file.o\
 	libskrift_open_font_mem.o\

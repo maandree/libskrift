@@ -233,6 +233,9 @@ _LIBSKRIFT_GCC_ONLY(__attribute__((__nonnull__)))
 int libskrift_open_font_fd(LIBSKRIFT_FONT **, int);
 
 _LIBSKRIFT_GCC_ONLY(__attribute__((__nonnull__)))
+int libskrift_open_font_at(LIBSKRIFT_FONT **, int, const char *);
+
+_LIBSKRIFT_GCC_ONLY(__attribute__((__nonnull__)))
 int libskrift_open_font(LIBSKRIFT_FONT **, FILE *);
 
 void libskrift_close_font(LIBSKRIFT_FONT *);
