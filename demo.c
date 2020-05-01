@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 int
 main(void)
@@ -14,6 +15,11 @@ main(void)
 	struct libskrift_colour colour = LIBSKRIFT_PREMULTIPLY(.80f, .50f, .80f, .50f, .20f);
 	double height;
 	size_t size, i;
+
+	if (isatty(STDOUT_FILENO)) {
+		fprintf(stderr, "Output file is a binary PAM image file, I am not writing that to a terminal.\n");
+		return 1;
+	}
 
 	rendering.smoothing           = LIBSKRIFT_SUBPIXEL;
 	rendering.subpixel_order      = LIBSKRIFT_NONE;
