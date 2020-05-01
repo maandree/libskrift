@@ -36,7 +36,12 @@ variable O). The new alpha blending algorithm
 
 This algorithm works as the normal alpha blending
 algorithm if the opacity is used instead of alpha,
-and alpha is set to 1, on the foregrund.
+and alpha is set to 1, on the foregrund. This
+algorithm is identical to the normal alpha blending
+algorithm except that the opacity replaces the
+foreground's alpha, and the alpha is treated as any
+other colour except all colour colours are still
+premultiplied with it, since it is still an opacity.
 
 
 However, since libskrift is a text drawing library,
