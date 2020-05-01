@@ -30,9 +30,9 @@ the background object): opacity (we will call this
 variable O). The new alpha blending algorithm
 (“dual-alpha blending”) is:
 
-	C_out⋅A_out = C_bg⋅A_bg⋅O⋅(1 − A_fg⋅O) + C_fg⋅A_fg⋅O
+	C_out⋅A_out = C_bg⋅A_bg⋅(1 − O) + C_fg⋅A_fg⋅O
 
-	A_out = A_bg⋅O⋅(1 − A_fg⋅O) + A_fg⋅O
+	A_out = A_bg⋅(1 − O) + A_fg⋅O
 
 This algorithm works as the normal alpha blending
 algorithm if the opacity is used instead of alpha,
