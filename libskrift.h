@@ -145,7 +145,7 @@ struct libskrift_saved_grapheme {
 	size_t len;
 };
 
-struct libskrift_image {
+struct libskrift_image { /* TODO need horizontal blanking */
 	enum libskrift_format format;
 	enum libskrift_endian endian;
 	int                   premultiplied;
