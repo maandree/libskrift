@@ -99,7 +99,7 @@ libskrift_apply_glyph(LIBSKRIFT_CONTEXT *ctx, const struct libskrift_glyph *glyp
 	endc = (uint16_t)((int16_t)x2 - sx1);
 	endr = (uint16_t)((int16_t)y2 - sy1);
 
-	img_linesize = (size_t)image->width * psize;
+	img_linesize = (size_t)image->width * psize + image->hblanking;
 	img_start += (size_t)y1 * img_linesize;
 	img_start += (size_t)x1 * psize;
 

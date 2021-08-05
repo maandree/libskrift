@@ -307,7 +307,7 @@ main(int argc, char *argv[])
 {
 	LIBSKRIFT_FONT *font;
 	LIBSKRIFT_CONTEXT *ctx;
-	struct libskrift_image image = {LIBSKRIFT_R8G8B8A8, LIBSKRIFT_BE_SUBPIXEL, 0, 800, 600, NULL, NULL, NULL};
+	struct libskrift_image image = {LIBSKRIFT_R8G8B8A8, LIBSKRIFT_BE_SUBPIXEL, 0, 800, 600, 0, NULL, NULL, NULL};
 	struct libskrift_rendering rendering = LIBSKRIFT_DEFAULT_RENDERING;
 	struct libskrift_colour colour;
 	const char *font_file = DEMO_FONT;
