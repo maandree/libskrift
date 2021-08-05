@@ -140,6 +140,7 @@ struct libskrift_glyph {
 };
 
 struct libskrift_saved_grapheme {
+	int have_saved;
 	libskrift_codepoint_t cp;
 	size_t len;
 };
@@ -185,7 +186,7 @@ struct libskrift_colour {
 	.text_transformation                = {1, 0, 0,   0, 1, 0},\
 }
 
-#define LIBSKRIFT_NO_SAVED_GRAPHEME {0, 0}
+#define LIBSKRIFT_NO_SAVED_GRAPHEME {0, 0, 0}
 
 #define LIBSKRIFT_PREMULTIPLY(OPACITY, ALPHA, RED, GREEN, BLUE)\
 	{(OPACITY),\
@@ -254,8 +255,8 @@ const struct libskrift_rendering *libskrift_get_rendering_settings(LIBSKRIFT_CON
 _LIBSKRIFT_GCC_ONLY(__attribute__((__nonnull__)))
 int libskrift_get_grapheme_glyph(LIBSKRIFT_CONTEXT *, libskrift_codepoint_t, double, double, struct libskrift_glyph **);
 
-_LIBSKRIFT_GCC_ONLY(__attribute__((__nonnull__(1, 2, 6))))
-ssize_t libskrift_get_cluster_glyph(LIBSKRIFT_CONTEXT *, const char *, struct libskrift_saved_grapheme *,
+_LIBSKRIFT_GCC_ONLY(__attribute__((__nonnull__(1, 2, 7))))
+ssize_t libskrift_get_cluster_glyph(LIBSKRIFT_CONTEXT *, const char *, size_t, struct libskrift_saved_grapheme *,
                                     double, double, struct libskrift_glyph **);
 
 _LIBSKRIFT_GCC_ONLY(__attribute__((__nonnull__)))
@@ -266,8 +267,8 @@ _LIBSKRIFT_GCC_ONLY(__attribute__((__nonnull__(1, 2, 6))))
 int libskrift_apply_glyph(LIBSKRIFT_CONTEXT *, const struct libskrift_glyph *, const struct libskrift_colour *,
                           int16_t, int16_t, struct libskrift_image *);
 
-_LIBSKRIFT_GCC_ONLY(__attribute__((__nonnull__(1, 2, 6))))
-int libskrift_draw_text(LIBSKRIFT_CONTEXT *, const char *, const struct libskrift_colour *,
+_LIBSKRIFT_GCC_ONLY(__attribute__((__nonnull__(1, 2, 7))))
+int libskrift_draw_text(LIBSKRIFT_CONTEXT *, const char *, size_t, const struct libskrift_colour *,
                         int16_t, int16_t, struct libskrift_image *);
 
 

@@ -13,6 +13,7 @@ libskrift_open_font_fd(LIBSKRIFT_FONT **fontp, int fd)
 
 	saved_errno = errno;
 	if (fstat(fd, &st) < 0 || !st.st_size || !S_ISREG(st.st_mode)) {
+	fallback:
 		for (;;) {
 			if (off + 2048 > size) {
 				size += 8192;
@@ -39,6 +40,8 @@ libskrift_open_font_fd(LIBSKRIFT_FONT **fontp, int fd)
 		errno = saved_errno;
 	} else {
 		mem = mmap(NULL, (size_t)st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+		if (mem == MAP_FAILED || !mem)
+			goto fallback;
 		size = (size_t)st.st_size;
 		mmapped = 1;
 	}

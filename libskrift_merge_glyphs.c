@@ -20,7 +20,7 @@ libskrift_merge_glyphs(LIBSKRIFT_CONTEXT *ctx, const struct libskrift_glyph *gly
 		glyph2 = t;
 	}
 	if (!(glyph2->width | glyph2->height)) {
-		size = offsetof(struct libskrift_glyph, image) + glyph1->size;
+		size = FLEXSTRUCTSIZE(struct libskrift_glyph, image, glyph1->size);
 		*glyphp = calloc(1, size);
 		if (!*glyphp)
 			return -1;
@@ -47,7 +47,7 @@ libskrift_merge_glyphs(LIBSKRIFT_CONTEXT *ctx, const struct libskrift_glyph *gly
 	size *= width  = (uint16_t)(x2 - x1);
 	size *= height = (uint16_t)(y2 - y1);
 
-	*glyphp = calloc(1, offsetof(struct libskrift_glyph, image) + size);
+	*glyphp = calloc(1, FLEXSTRUCTSIZE(struct libskrift_glyph, image, size));
 	if (!*glyphp)
 		return -1;
 

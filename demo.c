@@ -54,7 +54,7 @@ main(void)
 		((uint8_t *)image.image)[i + 3] = 250U;
 	}
 
-	if (libskrift_draw_text(ctx, "hello world", &colour, 0, 300, &image) < 0) {
+	if (libskrift_draw_text(ctx, "hello world", strlen("hello world"), &colour, 0, 300, &image) < 0) {
 		perror("libskrift_draw_text");
 		return -1;
 	}

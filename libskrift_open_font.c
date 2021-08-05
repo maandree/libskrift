@@ -43,8 +43,8 @@ libskrift_open_font(LIBSKRIFT_FONT **fontp, FILE *fp)
 		return -1;
 	}
 
-	(*fontp)->memory_free  = mem;
-	(*fontp)->memory_size  = size;
+	(*fontp)->memory_free = mem;
+	(*fontp)->memory_size = size;
 
 	return 0;
 }

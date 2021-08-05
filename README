@@ -13,7 +13,7 @@ Currently implemented:
 	Subpixel rendering (RGB, BGR, both horizontal and vertical).
 
 	DPI support. (Points, inches, and millimeters can be
-	exactly converted pixels.)
+	exactly converted to pixels.)
 	(Both horizonal and vertical resolution can be specified.)
 
 	Drawing coloured text with 3 primaries, alpha and opacity,
@@ -78,7 +78,7 @@ Things that require new features in libschrift
 
 Out of scope:
 
-	Bidirection text.
+	Bidirectional text.
 
 	Text justification.
 
@@ -89,3 +89,5 @@ Out of scope:
 	Underline, overline, strike-thought, ...
 
 	Superscript and subscript.
+
+	Mathematical formulae formating.

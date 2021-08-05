@@ -32,5 +32,4 @@ const struct format_settings libskrift_format_settings[] = {
 	[LIBSKRIFT_RGB_LONG_DOUBLE]  = {3,  RGB,  sizeof(long double)},
 	[LIBSKRIFT_ARGB_LONG_DOUBLE] = {3, ARGB,  sizeof(long double)},
 	[LIBSKRIFT_RGBA_LONG_DOUBLE] = {3,  RGBA, sizeof(long double)}
-	/* REMEMBER that element count is specified in common.h */
 };

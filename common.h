@@ -19,6 +19,9 @@
 
 #define LEN(ARR) (sizeof(ARR) / sizeof(*(ARR)))
 
+#define FLEXSTRUCTSIZE(STRUCT, FLEXARRAY, FLEXARRAY_LENGTH)\
+	(offsetof(STRUCT, FLEXARRAY) + (FLEXARRAY_LENGTH) * sizeof(*((STRUCT *)NULL)->FLEXARRAY))
+
 struct libskrift_font {
 	SFT_Font *font;
 	void     *memory_free;

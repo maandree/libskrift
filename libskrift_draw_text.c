@@ -2,45 +2,42 @@
 #include "common.h"
 
 static void
-reverse_text(const char *restrict text, char *restrict s, size_t off)
+reverse_text(const char *restrict text, size_t text_length, char *restrict s)
 {
-	size_t n;
-	s[off] = '\0';
-	for (; *text; text += n) {
-		off -= n = grapheme_len(text);
+	size_t n, off = text_length;
+	for (; text_length; text += n, text_length -= n) {
+		off -= n = grapheme_bytelen(text);
 		memcpy(&s[off], text, n);
 	}
 }
 
 int
-libskrift_draw_text(LIBSKRIFT_CONTEXT *ctx, const char *text, const struct libskrift_colour *colour,
-                    int16_t x, int16_t y, struct libskrift_image *image)
+libskrift_draw_text(LIBSKRIFT_CONTEXT *ctx, const char *text, size_t text_length,
+                    const struct libskrift_colour *colour, int16_t x, int16_t y, struct libskrift_image *image)
 {
 	struct libskrift_saved_grapheme saved = LIBSKRIFT_NO_SAVED_GRAPHEME;
 	struct libskrift_glyph *glyph;
 	char *buffer = NULL;
 	double xpos = 0, ypos = 0;
 	ssize_t len;
-	size_t n;
 	int r;
 
 	if (ctx->rendering.flags & LIBSKRIFT_MIRROR_TEXT) {
-		n = strlen(text);
-		if (n < 1024) {
-			buffer = alloca(n + 1);
+		if (text_length < 1024) {
+			buffer = alloca(text_length + 1);
 		} else {
-			buffer = malloc(n + 1);
+			buffer = malloc(text_length + 1);
 			if (!buffer)
 				return -1;
 		}
-		reverse_text(text, buffer, n);
+		reverse_text(text, text_length, buffer);
 		text = buffer;
-		if (n < 1024)
+		if (text_length < 1024)
 			buffer = NULL;
 	}
 
-	for (; *text; text += len) {
-		len = libskrift_get_cluster_glyph(ctx, text, &saved, xpos, ypos, &glyph);
+	for (; text_length; text += len, text_length -= (size_t)len) {
+		len = libskrift_get_cluster_glyph(ctx, text, text_length, &saved, xpos, ypos, &glyph);
 		if (len < 0) {
 			free(buffer);
 			return -1;

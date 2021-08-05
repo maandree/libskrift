@@ -95,7 +95,7 @@ libskrift_apply_glyph(LIBSKRIFT_CONTEXT *ctx, const struct libskrift_glyph *glyp
 	startc = (uint16_t)((int16_t)x1 - sx1);
 	startr = (uint16_t)((int16_t)y1 - sy1);
 
-	/* Post-last pixel in glyph to draw*/
+	/* Post-last pixel in glyph to draw */
 	endc = (uint16_t)((int16_t)x2 - sx1);
 	endr = (uint16_t)((int16_t)y2 - sy1);
 
