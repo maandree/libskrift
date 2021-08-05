@@ -29,7 +29,8 @@ libskrift_get_cluster_glyph(LIBSKRIFT_CONTEXT *ctx, const char *text, size_t tex
 	if (libskrift_get_grapheme_glyph(ctx, cp0, x, y, &glyph0))
 		return -1;
 
-	x += glyph0->advance;
+	x += glyph0->advance * ctx->char_x_advancement;
+	y += glyph0->advance * ctx->char_y_advancement;
 	for (; len < text_length; cp0 = cp1, len += r) {
 		r = grapheme_cp_decode(&cp1, (const void *)&text[len], text_length - len);
 		if (grapheme_boundary(cp0, cp1, &state)) {
@@ -45,7 +46,8 @@ libskrift_get_cluster_glyph(LIBSKRIFT_CONTEXT *ctx, const char *text, size_t tex
 			free(glyph0);
 			return -1;
 		}
-		x += glyph1->advance;
+		x += glyph1->advance * ctx->char_x_advancement;
+		y += glyph1->advance * ctx->char_y_advancement;
 
 		if (libskrift_merge_glyphs(ctx, glyph0, glyph1, &glyph2)) {
 			free(glyph0);

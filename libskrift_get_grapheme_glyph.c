@@ -38,7 +38,7 @@ libskrift_get_grapheme_glyph(LIBSKRIFT_CONTEXT *ctx, libskrift_codepoint_t codep
 	height = (uint16_t)(sft_chr.height + top + bottom) / vmul;
 	size  *= (size_t)width * (size_t)height;
 
-	*glyphp = malloc(offsetof(struct libskrift_glyph, image) + size);
+	*glyphp = malloc(FLEXSTRUCTSIZE(struct libskrift_glyph, image, size));
 	if (!*glyphp) {
 		free(sft_chr.image);
 		return -1;

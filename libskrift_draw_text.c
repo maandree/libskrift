@@ -18,7 +18,7 @@ libskrift_draw_text(LIBSKRIFT_CONTEXT *ctx, const char *text, size_t text_length
 	struct libskrift_saved_grapheme saved = LIBSKRIFT_NO_SAVED_GRAPHEME;
 	struct libskrift_glyph *glyph;
 	char *buffer = NULL;
-	double xpos = 0, ypos = 0;
+	double xpos = 0, ypos = 0, advance;
 	ssize_t len;
 	int r;
 
@@ -44,8 +44,10 @@ libskrift_draw_text(LIBSKRIFT_CONTEXT *ctx, const char *text, size_t text_length
 		}
 
 		r = libskrift_apply_glyph(ctx, glyph, colour, x, y, image);
-		xpos += (glyph->advance + ctx->rendering.interletter_spacing) * ctx->x_advancement;
-		ypos += (glyph->advance + ctx->rendering.interletter_spacing) * ctx->y_advancement;
+		advance = glyph->advance * ctx->char_x_advancement;
+		advance += ctx->rendering.interletter_spacing;
+		xpos += advance * ctx->text_x_advancement;
+		ypos += advance * ctx->text_y_advancement;
 		free(glyph);
 		if (r) {
 			free(buffer);

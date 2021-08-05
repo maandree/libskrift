@@ -77,8 +77,10 @@ libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT **fonts, size_
 
 	(*ctxp)->schrift_ctx.font   = fonts[0]->font;
 	(*ctxp)->schrift_ctx.yScale = height;
-	(*ctxp)->x_advancement      = 1;
-	(*ctxp)->y_advancement      = 0;
+	(*ctxp)->char_x_advancement = 1;
+	(*ctxp)->char_y_advancement = 0;
+	(*ctxp)->text_x_advancement = 1;
+	(*ctxp)->text_y_advancement = 0;
 	(*ctxp)->nfonts             = nfonts;
 	for (i = 0; i < nfonts; i++) {
 		(*ctxp)->fonts[i] = fonts[i];
@@ -126,8 +128,10 @@ libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT **fonts, size_
 	    fpclassify((*ctxp)->rendering.text_transformation[5])     != FP_ZERO) {
 		memcpy((*ctxp)->transformation, (*ctxp)->rendering.char_transformation, sizeof((*ctxp)->transformation));
 		libskrift_add_transformation((*ctxp)->transformation, (*ctxp)->rendering.text_transformation);
-		(*ctxp)->x_advancement = (*ctxp)->rendering.text_transformation[0];
-		(*ctxp)->y_advancement = (*ctxp)->rendering.text_transformation[3];
+		(*ctxp)->char_x_advancement = (*ctxp)->rendering.char_transformation[0];
+		(*ctxp)->char_y_advancement = (*ctxp)->rendering.char_transformation[3];
+		(*ctxp)->text_x_advancement = (*ctxp)->rendering.text_transformation[0];
+		(*ctxp)->text_y_advancement = (*ctxp)->rendering.text_transformation[3];
 		(*ctxp)->schrift_ctx.transformation_hook = transformation_hook;
 	}
 

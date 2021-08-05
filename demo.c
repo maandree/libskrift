@@ -19,6 +19,7 @@ USAGE("[-b background-colour] [-f foreground-colour] [-a opacity] [-t character-
       "[-S smoothing-method[:subpixel-order]] [-H hiniting] [-o flags] ... [-s font-size] [-F font-file] "
       "[-D dpi-x:dpi-y | -D dpi] [-w width] [-h height] [-x x-position] [-y y-position] [text]");
 
+
 static uint8_t
 decode_hexbyte(char hi, char lo)
 {
@@ -27,6 +28,7 @@ decode_hexbyte(char hi, char lo)
 	ret |= ((lo & 15) + 9 * (lo > '9')) << 0;
 	return (uint8_t)ret;
 }
+
 
 static void
 parse_colour(const char *s, uint8_t *redp, uint8_t *greenp, uint8_t *bluep, uint8_t *alphap)
@@ -67,6 +69,7 @@ invalid:
 	exit(1);
 }
 
+
 _LIBSKRIFT_GCC_ONLY(__attribute__((__pure__)))
 static uint16_t
 parse_uint16(const char *s)
@@ -83,6 +86,7 @@ parse_uint16(const char *s)
 	}
 	return ret;
 }
+
 
 _LIBSKRIFT_GCC_ONLY(__attribute__((__pure__)))
 static int16_t
@@ -110,6 +114,7 @@ parse_int16(const char *s, const char **end)
 	*end = s;
 	return ret;
 }
+
 
 static void
 parse_transformation(char *s, double matrix[6])
@@ -277,6 +282,26 @@ parse_transformation(char *s, double matrix[6])
 #undef S0
 }
 
+
+static double
+apply_unit(double size, const char *unit, const struct libskrift_rendering *rendering, const char *unit_for)
+{
+	if (!strcmp(unit, "px"))
+		return size;
+	if (!strcmp(unit, "pt"))
+		return libskrift_points_to_pixels(size, rendering);
+	if (!strcmp(unit, "in"))
+		return libskrift_inches_to_pixels(size, rendering);
+	if (!strcmp(unit, "mm"))
+		return libskrift_millimeters_to_pixels(size, rendering);
+	if (!strcmp(unit, "cm"))
+		return libskrift_millimeters_to_pixels(size * 10, rendering);
+
+	fprintf(stderr, "%s: valid %s units are: 'px', 'pt', 'in', 'mm', 'cm'", argv0, unit_for);
+	exit(1);
+}
+
+
 int
 main(int argc, char *argv[])
 {
@@ -289,7 +314,8 @@ main(int argc, char *argv[])
 	double font_size = 72;
 	const char *font_size_unit = "pt";
 	const char *x_unit = "", *y_unit = "";
-	double height, opacity = .80f, xf, yf;
+	const char *kerning_unit = "", *interletter_spacing_unit = "";
+	double height, opacity = .80f, f;
 	size_t size, i;
 	char *end, *arg;
 	const char *text = TEST_TEXT;
@@ -441,15 +467,17 @@ main(int argc, char *argv[])
 	case 'k':
 		errno = 0;
 		rendering.kerning = strtod(ARG(), &end);
-		if (errno || *end)
+		if (errno)
 			usage();
+		kerning_unit = end;
 		break;
 
 	case 'i':
 		errno = 0;
 		rendering.interletter_spacing = strtod(ARG(), &end);
-		if (errno || *end)
+		if (errno)
 			usage();
+		interletter_spacing_unit = end;
 		break;
 
 	case 'g':
@@ -562,63 +590,40 @@ main(int argc, char *argv[])
 		return 1;
 	}
 
+	if (*x_unit && strcmp(x_unit, "px")) {
+		f = (double)x;
+		f = apply_unit(f, x_unit, &rendering, "position");
+		x = (int16_t)f;
+	}
+
+	if (*y_unit && strcmp(y_unit, "px")) {
+		f = (double)y;
+		f = apply_unit(f, y_unit, &rendering, "position");
+		y = (int16_t)f;
+	}
+
+	if (*kerning_unit && strcmp(kerning_unit, "px")) {
+		f = rendering.kerning;
+		f = apply_unit(f, kerning_unit, &rendering, "spacing");
+		rendering.kerning = f;
+	}
+
+	if (*interletter_spacing_unit && strcmp(interletter_spacing_unit, "px")) {
+		f = rendering.interletter_spacing;
+		f = apply_unit(f, interletter_spacing_unit, &rendering, "spacing");
+		rendering.interletter_spacing = f;
+	}
+
 	if (libskrift_open_font_file(&font, font_file)) {
 		perror("libskrift_open_font_file");
 		return 1;
 	}
-	if (!strcmp(font_size_unit, "pt")) {
-		height = libskrift_points_to_pixels(font_size, &rendering);
-	} else if (!strcmp(font_size_unit, "px")) {
-		height = font_size;
-	} else if (!strcmp(font_size_unit, "in")) {
-		height = libskrift_inches_to_pixels(font_size, &rendering);
-	} else if (!strcmp(font_size_unit, "mm")) {
-		height = libskrift_millimeters_to_pixels(font_size, &rendering);
-	} else if (!strcmp(font_size_unit, "cm")) {
-		height = libskrift_millimeters_to_pixels(font_size * 10, &rendering);
-	} else {
-		fprintf(stderr, "%s: valid font size units are: 'pt', 'px', 'in', 'mm', 'cm'", argv0);
-		return 1;
-	}
+	height = apply_unit(font_size, font_size_unit, &rendering, "font size");
 	if (libskrift_create_context(&ctx, &font, 1, height, &rendering, NULL)) {
 		perror("libskrift_create_context");
 		return 1;
 	}
 	libskrift_close_font(font);
-
-	if (*x_unit && strcmp(x_unit, "px")) {
-		xf = (double)x;
-		if (!strcmp(x_unit, "pt")) {
-			xf = (int16_t)libskrift_points_to_pixels(xf, &rendering);
-		} else if (!strcmp(x_unit, "in")) {
-			xf = (int16_t)libskrift_inches_to_pixels(xf, &rendering);
-		} else if (!strcmp(x_unit, "mm")) {
-			xf = (int16_t)libskrift_millimeters_to_pixels(xf, &rendering);
-		} else if (!strcmp(x_unit, "cm")) {
-			xf = (int16_t)libskrift_millimeters_to_pixels(xf * 10, &rendering);
-		} else {
-			fprintf(stderr, "%s: valid position units are: 'pt', 'px', 'in', 'mm', 'cm'", argv0);
-			return 1;
-		}
-		x = (int16_t)xf;
-	}
-
-	if (*y_unit && strcmp(y_unit, "px")) {
-		yf = (double)y;
-		if (!strcmp(y_unit, "pt")) {
-			yf = libskrift_points_to_pixels(yf, &rendering);
-		} else if (!strcmp(y_unit, "in")) {
-			yf = libskrift_inches_to_pixels(yf, &rendering);
-		} else if (!strcmp(y_unit, "mm")) {
-			yf = libskrift_millimeters_to_pixels(yf, &rendering);
-		} else if (!strcmp(y_unit, "cm")) {
-			yf = libskrift_millimeters_to_pixels(yf * 10, &rendering);
-		} else {
-			fprintf(stderr, "%s: valid position units are: 'pt', 'px', 'in', 'mm', 'cm'", argv0);
-			return 1;
-		}
-		y = (int16_t)yf;
-	}
 
 	size = 4;
 	size *= (size_t)image.width;

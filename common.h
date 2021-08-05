@@ -36,8 +36,10 @@ struct libskrift_context {
 	char                       subpixel_horizontally;
 	char                       subpixel_vertically;
 	char                       subpixel_bgr;
-	double                     x_advancement;
-	double                     y_advancement;
+	double                     char_x_advancement;
+	double                     char_y_advancement;
+	double                     text_x_advancement;
+	double                     text_y_advancement;
 	double                     transformation[6];
 	size_t                     nfonts;
 	LIBSKRIFT_FONT            *fonts[];
