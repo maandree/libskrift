@@ -5,6 +5,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#define TEST_TEXT "hello world"
+
 int
 main(void)
 {
@@ -54,7 +56,7 @@ main(void)
 		((uint8_t *)image.image)[i + 3] = 250U;
 	}
 
-	if (libskrift_draw_text(ctx, "hello world", strlen("hello world"), &colour, 0, 300, &image) < 0) {
+	if (libskrift_draw_text(ctx, TEST_TEXT, sizeof(TEST_TEXT) - 1, &colour, 0, 300, &image) < 0) {
 		perror("libskrift_draw_text");
 		return -1;
 	}
