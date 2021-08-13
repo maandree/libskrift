@@ -70,7 +70,7 @@ uninstall:
 	-rm -f -- "$(DESTDIR)$(PREFIX)/include/libskrift.h"
 
 clean:
-	-rm -f -- *.o *.lo *.su *.a *.so *.so.*
+	-rm -f -- *.o *.lo *.su *.a *.so *.so.* demo
 
 .SUFFIXES:
 .SUFFIXES: .c .o
