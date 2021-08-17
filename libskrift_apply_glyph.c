@@ -53,7 +53,7 @@ libskrift_apply_glyph(LIBSKRIFT_CONTEXT *ctx, const struct libskrift_glyph *glyp
 	const uint32_t u32 = 0x01020304L;
 	const uint64_t u64 = 0x0102030405060708LL;
 
-	if (image->format == LIBSKRIFT_RAW || (unsigned int)image->format > (unsigned int)LEN(libskrift_format_settings)) {
+	if (image->format == LIBSKRIFT_RAW || (unsigned int)image->format > (unsigned int)ELEMSOF(libskrift_format_settings)) {
 		errno = EINVAL;
 		return -1;
 	}

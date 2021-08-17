@@ -8,7 +8,7 @@
 #define IMPLEMENTED_FLAGS (LIBSKRIFT_REMOVE_GAMMA |\
                            LIBSKRIFT_MIRROR_TEXT  |\
                            LIBSKRIFT_MIRROR_CHARS |\
-                           FORCED_FLAGS) /* libschrift does not add gamma, so not handling is required */
+                           FORCED_FLAGS) /* libschrift does not add gamma, so no handling is required */
 
 #define TRANSFORMING_FLAGS (LIBSKRIFT_MIRROR_TEXT    |\
                             LIBSKRIFT_MIRROR_CHARS   |\
@@ -75,7 +75,7 @@ libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT **fonts, size_
 	if (!*ctxp)
 		return -1;
 
-	(*ctxp)->schrift_ctx.font   = fonts[0]->font;
+	(*ctxp)->schrift_ctx.font   = fonts[0]->font.schrift;
 	(*ctxp)->schrift_ctx.yScale = height;
 	(*ctxp)->char_x_advancement = 1;
 	(*ctxp)->char_y_advancement = 0;

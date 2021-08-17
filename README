@@ -2,7 +2,7 @@ libskrift is a text drawing library for C that is based on libschrift.
 
 The name:
 
-	Schrift in libschift is German for “font” (can also mean “scripture”),
+	Schrift in libschrift is German for “font” (can also mean “scripture”),
 	skrift in libskrift is Swedish for “scripture” (cannot mean “font”).
 
 

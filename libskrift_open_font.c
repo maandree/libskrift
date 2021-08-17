@@ -38,13 +38,10 @@ libskrift_open_font(LIBSKRIFT_FONT **fontp, FILE *fp)
 		mem = new;
 	errno = saved_errno;
 
-	if (libskrift_open_font_mem(fontp, mem, size)) {
+	if (libskrift_open_font_adopt_mem(fontp, mem, size)) {
 		free(mem);
 		return -1;
 	}
-
-	(*fontp)->memory_free = mem;
-	(*fontp)->memory_size = size;
 
 	return 0;
 }

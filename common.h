@@ -2,11 +2,14 @@
 
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <alloca.h>
 #include <endian.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <math.h>
+#include <poll.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -17,17 +20,25 @@
 #define MIN(A, B) ((A) < (B) ? (A) : (B))
 #define MAX(A, B) ((A) > (B) ? (A) : (B))
 
-#define LEN(ARR) (sizeof(ARR) / sizeof(*(ARR)))
+#define ELEMSOF(ARR) (sizeof(ARR) / sizeof(*(ARR)))
 
 #define FLEXSTRUCTSIZE(STRUCT, FLEXARRAY, FLEXARRAY_LENGTH)\
 	(offsetof(STRUCT, FLEXARRAY) + (FLEXARRAY_LENGTH) * sizeof(*((STRUCT *)NULL)->FLEXARRAY))
 
+enum font_type {
+	FONT_TYPE_SCHRIFT /* using libschrift backend */
+};
+
 struct libskrift_font {
-	SFT_Font *font;
-	void     *memory_free;
-	void     *memory_unmap;
-	size_t    memory_size;
-	size_t    refcount;
+	enum font_type    font_type;
+	union {
+		void         *any;
+		SFT_Font     *schrift;
+	}                 font;
+	void             *memory_free;
+	void             *memory_unmap;
+	size_t            memory_size;
+	size_t            refcount;
 };
 
 struct libskrift_context {
@@ -55,3 +66,5 @@ struct format_settings {
 };
 
 extern const struct format_settings libskrift_format_settings[LIBSKRIFT_RGBA_LONG_DOUBLE + 1];
+
+int libskrift_open_font___(LIBSKRIFT_FONT **fontp, const void *mem_static, void *mem_free, void *mem_unmap, size_t size);

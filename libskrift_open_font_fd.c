@@ -46,17 +46,14 @@ libskrift_open_font_fd(LIBSKRIFT_FONT **fontp, int fd)
 		mmapped = 1;
 	}
 
-	if (libskrift_open_font_mem(fontp, mem, size)) {
+	if ((mmapped ? libskrift_open_font_adopt_mmap
+	             : libskrift_open_font_adopt_mem)(fontp, mem, size)) {
 		if (mmapped)
 			munmap(mem, size);
 		else
 			free(mem);
 		return -1;
 	}
-
-	(*fontp)->memory_free  = mmapped ? NULL : mem;
-	(*fontp)->memory_unmap = mmapped ? mem : NULL;
-	(*fontp)->memory_size  = size;
 
 	return 0;
 }
