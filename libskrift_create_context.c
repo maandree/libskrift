@@ -5,6 +5,7 @@
                       LIBSKRIFT_NO_AUTOHINTING |\
                       LIBSKRIFT_NO_AUTOKERNING)
 
+/* TODO implement more flags */
 #define IMPLEMENTED_FLAGS (LIBSKRIFT_REMOVE_GAMMA |\
                            LIBSKRIFT_MIRROR_TEXT  |\
                            LIBSKRIFT_MIRROR_CHARS |\
@@ -38,7 +39,7 @@ transformation_hook(void *hook_data, double advance, double transform[6])
 	double schrift[6] = {transform[0], transform[2], transform[4],
 	                     transform[1], transform[3], transform[5]};
 	double m1[6] = {1, 0, 0, 0, 1, 0}, m2[6] = {1, 0, 0, 0, 1, 0};
-	if (((ctx->rendering.flags / LIBSKRIFT_MIRROR_CHARS) ^ (ctx->rendering.flags / LIBSKRIFT_MIRROR_TEXT)) & 1)
+	if (FLAGXOR(ctx->rendering.flags, LIBSKRIFT_MIRROR_CHARS, LIBSKRIFT_MIRROR_TEXT))
 		multiply_matrices((double []){-1, 0, advance / schrift[0], 0, 1, 0}, m2, m1);
 	multiply_matrices(ctx->transformation, m1, m2);
 	multiply_matrices(schrift, m2, m1);
@@ -75,7 +76,6 @@ libskrift_create_context(LIBSKRIFT_CONTEXT **ctxp, LIBSKRIFT_FONT **fonts, size_
 	if (!*ctxp)
 		return -1;
 
-	(*ctxp)->schrift_ctx.font   = fonts[0]->font.schrift;
 	(*ctxp)->schrift_ctx.yScale = height;
 	(*ctxp)->char_x_advancement = 1;
 	(*ctxp)->char_y_advancement = 0;

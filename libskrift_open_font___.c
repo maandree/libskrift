@@ -9,6 +9,10 @@
 #define IS_PSF_V2() (size >= 32 && mem8[0] == 0x72 && mem8[1] == 0xb5 && mem8[2] == 0x4a && mem8[3] == 0x86) 
 
 #if defined(GUNZIP_PATH)
+# define WITH_DECOMPRESS
+#endif
+
+#ifdef WITH_DECOMPRESS
 static int
 decompress(const char *path, const void *mem, size_t size, void **memp, size_t *sizep)
 {
@@ -200,8 +204,10 @@ libskrift_open_font___(LIBSKRIFT_FONT **fontp, const void *mem_static, void *mem
 	const void *mem = mem_static ? mem_static : mem_free ? mem_free : mem_unmap;
 	const uint8_t *mem8 = mem;
 	void *new_mem = NULL;
-#if defined(GUNZIP_PATH)
-	size_t new_size = 0;
+#ifdef WITH_DECOMPRESS
+	void *free_on_failure = NULL;
+	void *old_free = NULL, *old_unmap = NULL;
+	size_t new_size = 0, old_size = size;
 #endif
 
 	*fontp = calloc(1, sizeof(**fontp));
@@ -213,28 +219,26 @@ libskrift_open_font___(LIBSKRIFT_FONT **fontp, const void *mem_static, void *mem
 	if (IS_GZIP()) {
 		if (decompress(GUNZIP_PATH, mem, size, &new_mem, &new_size))
 			return -1;
-		if (mem_free)
-			free(mem_free);
-		else if (mem_unmap)
-			munmap(mem_unmap, size);
+		old_free = mem_free;
+		old_unmap = mem_unmap;
 		mem_static = NULL;
 		mem_unmap = NULL;
-		mem8 = mem = mem_free = new_mem;
+		mem8 = mem = free_on_failure = mem_free = new_mem;
 		size = new_size;
 	}
 #endif
 
-	if (IS_PSF_V1() || IS_PSF_V2()) { /* TODO */
-		errno = EBFONT;
-		return -1;
-	} else {
-		(*fontp)->font_type = FONT_TYPE_SCHRIFT;
-		(*fontp)->font.schrift = sft_loadmem(mem, size);
+	if (IS_PSF_V1() || IS_PSF_V2()) {
+		/* TODO Convert to TTF */
 	}
 
-	if (!(*fontp)->font.any) {
+	(*fontp)->font = sft_loadmem(mem, size);
+	if (!(*fontp)->font) {
 		free(*fontp);
 		*fontp = NULL;
+#ifdef WITH_DECOMPRESS
+		free(free_on_failure);
+#endif
 		return -1;
 	}
 
@@ -245,6 +249,13 @@ libskrift_open_font___(LIBSKRIFT_FONT **fontp, const void *mem_static, void *mem
 		(*fontp)->memory_unmap = mem_unmap;
 		(*fontp)->memory_size = size;
 	}
+
+#ifdef WITH_DECOMPRESS
+	if (old_free)
+		free(old_free);
+	else if (old_unmap)
+		munmap(old_unmap, old_size);
+#endif
 
 	return 0;
 }

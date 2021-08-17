@@ -14,31 +14,25 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <schrift.h>
 #include <grapheme.h>
+#include <schrift.h>
 
 #define MIN(A, B) ((A) < (B) ? (A) : (B))
 #define MAX(A, B) ((A) > (B) ? (A) : (B))
 
 #define ELEMSOF(ARR) (sizeof(ARR) / sizeof(*(ARR)))
 
+#define FLAGXOR(F, A, B) ((((F) / (A)) ^ ((F) / (B))) & 1)
+
 #define FLEXSTRUCTSIZE(STRUCT, FLEXARRAY, FLEXARRAY_LENGTH)\
 	(offsetof(STRUCT, FLEXARRAY) + (FLEXARRAY_LENGTH) * sizeof(*((STRUCT *)NULL)->FLEXARRAY))
 
-enum font_type {
-	FONT_TYPE_SCHRIFT /* using libschrift backend */
-};
-
 struct libskrift_font {
-	enum font_type    font_type;
-	union {
-		void         *any;
-		SFT_Font     *schrift;
-	}                 font;
-	void             *memory_free;
-	void             *memory_unmap;
-	size_t            memory_size;
-	size_t            refcount;
+	SFT_Font *font;
+	void     *memory_free;
+	void     *memory_unmap;
+	size_t    memory_size;
+	size_t    refcount;
 };
 
 struct libskrift_context {

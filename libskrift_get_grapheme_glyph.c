@@ -1,9 +1,9 @@
 /* See LICENSE file for copyright and license details. */
 #include "common.h"
 
-int
-libskrift_get_grapheme_glyph(LIBSKRIFT_CONTEXT *ctx, libskrift_codepoint_t codepoint,
-                             double cursor_x, double cursor_y, struct libskrift_glyph **glyphp)
+static int
+get_grapheme_glyph_with_font(LIBSKRIFT_CONTEXT *ctx, libskrift_codepoint_t codepoint, double cursor_x,
+                             double cursor_y, struct libskrift_glyph **glyphp, LIBSKRIFT_FONT *font)
 {
 	struct SFT_Char sft_chr;
 	struct SFT sft_ctx;
@@ -15,12 +15,14 @@ libskrift_get_grapheme_glyph(LIBSKRIFT_CONTEXT *ctx, libskrift_codepoint_t codep
 	memset(&sft_chr, 0, sizeof(sft_chr));
 	sft_ctx = ctx->schrift_ctx;
 
+	sft_ctx.font = font->font;
 	sft_ctx.x = cursor_x * (ctx->subpixel_horizontally ? 3 : 1);
 	sft_ctx.y = cursor_y * (ctx->subpixel_vertically ? 3 : 1);
 	sft_ctx.flags = SFT_DOWNWARD_Y | SFT_CHAR_IMAGE;
 
+	errno = 0;
 	if (sft_char(&sft_ctx, codepoint, &sft_chr))
-		return -1;
+		return errno ? -1 : 1;
 
 	if (ctx->subpixel_horizontally) {
 		hmul   = 3;
@@ -98,4 +100,21 @@ libskrift_get_grapheme_glyph(LIBSKRIFT_CONTEXT *ctx, libskrift_codepoint_t codep
 
 	free(sft_chr.image);
 	return 0;
+}
+
+int
+libskrift_get_grapheme_glyph(LIBSKRIFT_CONTEXT *ctx, libskrift_codepoint_t codepoint,
+                             double cursor_x, double cursor_y, struct libskrift_glyph **glyphp)
+{
+	size_t i;
+	int r;
+
+	for (i = 0; i < ctx->nfonts; i++) {
+		r = get_grapheme_glyph_with_font(ctx, codepoint, cursor_x, cursor_y, glyphp, ctx->fonts[i]);
+		if (r <= 0)
+			return r;
+	}
+
+	/* TODO add callback for drawing fallback glyph, draw square by default. */
+	return -1;
 }
