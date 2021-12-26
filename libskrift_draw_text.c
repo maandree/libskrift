@@ -6,7 +6,7 @@ reverse_text(const char *restrict text, size_t text_length, char *restrict s)
 {
 	size_t n, off = text_length;
 	for (; text_length; text += n, text_length -= n) {
-		off -= n = grapheme_bytelen(text);
+		off -= n = grapheme_next_character_break(text, text_length);
 		memcpy(&s[off], text, n);
 	}
 }

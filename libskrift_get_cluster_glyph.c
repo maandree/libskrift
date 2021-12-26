@@ -8,9 +8,11 @@ libskrift_get_cluster_glyph(LIBSKRIFT_CONTEXT *ctx, const char *text, size_t tex
                             struct libskrift_saved_grapheme *saved, double x, double y, struct libskrift_glyph **glyphp)
 {
 	struct libskrift_glyph *glyph0, *glyph1, *glyph2;
-	uint32_t cp0, cp1;
-	int state = 0;
+	uint_least32_t cp0, cp1;
+	GRAPHEME_STATE state;
 	size_t r, len;
+
+	memset(&state, 0, sizeof(state));
 
 	*glyphp = NULL;
 
@@ -23,7 +25,7 @@ libskrift_get_cluster_glyph(LIBSKRIFT_CONTEXT *ctx, const char *text, size_t tex
 		cp0 = saved->cp;
 		len = saved->len;
 	} else {
-		len = grapheme_cp_decode(&cp0, (const void *)text, text_length);
+		len = grapheme_decode_utf8(text, text_length, &cp0);
 	}
 
 	if (libskrift_get_grapheme_glyph(ctx, cp0, x, y, &glyph0))
@@ -32,8 +34,8 @@ libskrift_get_cluster_glyph(LIBSKRIFT_CONTEXT *ctx, const char *text, size_t tex
 	x += glyph0->advance * ctx->char_x_advancement;
 	y += glyph0->advance * ctx->char_y_advancement;
 	for (; len < text_length; cp0 = cp1, len += r) {
-		r = grapheme_cp_decode(&cp1, (const void *)&text[len], text_length - len);
-		if (grapheme_boundary(cp0, cp1, &state)) {
+		r = grapheme_decode_utf8((const void *)&text[len], text_length - len, &cp1);
+		if (grapheme_is_character_break(cp0, cp1, &state)) {
 			if (saved) {
 				saved->have_saved = 1;
 				saved->cp = cp1;

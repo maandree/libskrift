@@ -115,6 +115,6 @@ libskrift_get_grapheme_glyph(LIBSKRIFT_CONTEXT *ctx, libskrift_codepoint_t codep
 			return r;
 	}
 
-	/* TODO add callback for drawing fallback glyph, draw square by default. */
+	/* TODO Use glyph 0 */
 	return -1;
 }
