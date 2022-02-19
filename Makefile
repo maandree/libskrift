@@ -3,6 +3,18 @@
 CONFIGFILE = config.mk
 include $(CONFIGFILE)
 
+OS = linux
+# Linux:   linux
+# Mac OS:  macos
+# Windows: windows
+include mk/$(OS).mk
+
+
+LIB_MAJOR = 1
+LIB_MINOR = 0
+LIB_VERSION = $(LIB_MAJOR).$(LIB_MINOR)
+
+
 OBJ =\
 	libskrift_add_180_degree_rotation.o\
 	libskrift_add_270_degree_rotation.o\
@@ -48,34 +60,53 @@ HDR =\
 	srgb-gamma.h\
 	$(LIB_HDR)
 
-all: libskrift.a demo
-$(OBJ): $(@:.o=.c) $(HDR)
-demo.o: demo.c $(LIB_HDR)
+LOBJ = $(OBJ:.o=.lo)
 
-libskrift.a: $(OBJ)
-	$(AR) rc $@ $(OBJ)
-	$(AR) ts $@ > /dev/null
+
+all: libskrift.a libskrift.$(LIBEXT) demo
+$(OBJ): $(HDR)
+$(LOBJ): $(HDR)
+demo.o: demo.c $(LIB_HDR)
 
 .c.o:
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
 
+.c.lo:
+	$(CC) -fPIC -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+libskrift.$(LIBEXT): $(LOBJ)
+	$(CC) $(LIBFLAGS) -o $@ $(LOBJ) $(LDFLAGS)
+
+libskrift.a: $(OBJ)
+	-rm -f -- $@
+	$(AR) rc $@ $(OBJ)
+	$(AR) ts $@ > /dev/null
+
 demo: demo.o libskrift.a
 	$(CC) -o $@ $@.o libskrift.a $(LDFLAGS)
 
-install: libskrift.a
+install: libskrift.a libskrift.$(LIBEXT)
 	mkdir -p -- "$(DESTDIR)$(PREFIX)/lib"
 	mkdir -p -- "$(DESTDIR)$(PREFIX)/include"
+	cp -- libskrift.a "$(DESTDIR)$(PREFIX)/lib"
+	cp -- libskrift.$(LIBEXT) "$(DESTDIR)$(PREFIX)/lib/libskrift.$(LIBMINOREXT)"
+	$(FIX_INSTALL_NAME) "$(DESTDIR)$(PREFIX)/lib/libskrift.$(LIBMINOREXT)"
+	ln -sf -- "libskrift.$(LIBMINOREXT)" "$(DESTDIR)$(PREFIX)/lib/libskrift.$(LIBMAJOREXT)"
+	ln -sf -- "libskrift.$(LIBMAJOREXT)" "$(DESTDIR)$(PREFIX)/lib/libskrift.$(LIBEXT)"
 	cp -- libskrift.a "$(DESTDIR)$(PREFIX)/lib"
 	cp -- libskrift.h "$(DESTDIR)$(PREFIX)/include"
 
 uninstall:
 	-rm -f -- "$(DESTDIR)$(PREFIX)/lib/libskrift.a"
+	-rm -f -- "$(DESTDIR)$(PREFIX)/lib/libskrift.$(LIBEXT)"
+	-rm -f -- "$(DESTDIR)$(PREFIX)/lib/libskrift.$(LIBMAJOREXT)"
+	-rm -f -- "$(DESTDIR)$(PREFIX)/lib/libskrift.$(LIBMINOREXT)"
 	-rm -f -- "$(DESTDIR)$(PREFIX)/include/libskrift.h"
 
 clean:
 	-rm -f -- *.o *.lo *.su *.a *.so *.so.* demo
 
 .SUFFIXES:
-.SUFFIXES: .c .o
+.SUFFIXES: .c .o .lo
 
 .PHONY: all install uninstall clean
