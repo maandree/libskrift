@@ -22,6 +22,6 @@ static const uint8_t gamma_u8[] = {
 	248, 249, 249, 250, 250, 251, 251, 251, 252, 252, 253, 253, 254, 254, 255, 255
 };
 
-#define FUNCTION_NAME libskrift_srgb_preprocess
+#define FUNCTION_NAME libskrift_srgb_postprocess
 
 #include "srgb-gamma.h"
