@@ -14,7 +14,7 @@ MERGE_STYLE = MAX
 
 CPPFLAGS = -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_XOPEN_SOURCE=700 -D_GNU_SOURCE \
            -D$(MERGE_STYLE)_MERGE $(GZIP_SUPPORT) '-DDEMO_FONT="$(DEMO_FONT)"'
-CFLAGS   = -std=c99 -Wall -g
+CFLAGS   = -Wall -g
 LDFLAGS  = -lschrift -lm -lgrapheme
 
-CC = cc
+CC = c99
